@@ -181,7 +181,7 @@ export default {
                     position => {
                         page.position = position;
                         // check for get_site_lication before checkin
-                        me.frappe.customApiCall(`api/method/one_fm.api.v2.face_recognition.get_site_location`,
+                        me.frappe.customApiCall(`api/method/one_fm.api.v1.face_recognition.get_site_location`,
                             {employee_id:me.employee_data.employee_id, latitude:position.coords.latitude,
                             longitude:position.coords.longitude}, 'POST').then(res=>{
                                 if(res.status_code==200){

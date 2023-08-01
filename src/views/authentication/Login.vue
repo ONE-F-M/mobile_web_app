@@ -41,12 +41,12 @@
                 </div>
 
 
-                <!-- <div class="form-links mt-2">
-                    <div>
+                <div class="form-links mt-2">
+                    <!-- <div>
                         <a href="app-register.html">Register Now</a>
-                    </div>
-                    <div><a href="app-forgot-password.html" class="text-muted">Forgot Password?</a></div>
-                </div> -->
+                    </div> -->
+                    <div><a href="/forgot_password" class="text-muted">Forgot Password?</a></div>
+                </div>
 
                
 

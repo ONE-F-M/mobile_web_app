@@ -3601,8 +3601,8 @@ textarea,
 
 .form-group.basic .form-control,
 .form-group.basic .custom-select {
-  background: transparent;
-  border: none;
+  /* background: transparent;
+  border: none; */
   border-bottom: 1px solid #DCDCE9;
   padding: 0 30px 0 0;
   border-radius:4px;
