@@ -55,7 +55,7 @@ export default {
                 {}, 'GET').then(res=>{
                 if (res.data){
                     let {image, employee_name, company, department, designation, enrolled} = res.data[0];
-                    image = this.url+image
+                    image = image ? this.url+image: 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
                     console.log(image)
                     let card = `
                     <div class="col-md-12 col-xs-12" style="text-align:center">
@@ -185,17 +185,19 @@ export default {
                             {employee_id:me.employee_data.employee_id, latitude:position.coords.latitude,
                             longitude:position.coords.longitude}, 'POST').then(res=>{
                                 if(res.status_code==200){
-                                    console.log(position.coords, res)
+                                    // console.log(position.coords, res)
                                     if (res.data.user_within_geofence_radius){
                                         me.shift = res.data;
+                                        console.log(res.data)
                                         // show buttons
                                         $('#button-controls').show();
                                         // add shift assignment to screen
+                                        // console.log(res)
                                         document.querySelector('#__site_name__').innerHTML = `
-                                            <h5><b>Site: </b> ${me.shift.site_name}</h5>
-                                            <h6><b>Site: </b> ${me.shift.shift_assignment.shift}</h6>
-                                            <h5><b>Start: </b> <i class="text-success">${me.shift.shift_assignment.start_datetime}</i></h5>
-                                            <h5><b>End: </b> <i class="text-danger">${me.shift.shift_assignment.end_datetime}</i></h5>
+                                            <h5><b>Site: <i class="text-success"></b> ${me.shift.shift.site}</i></h5>
+                                            <h6><b>Site: <i class="text-success"></b> ${me.shift.shift.shift}</i></h6>
+                                            <h5><b>Start: </b> <i class="text-success">${me.shift.shift.start_datetime}</i></h5>
+                                            <h5><b>End: </b> <i class="text-danger">${me.shift.shift.end_datetime}</i></h5>
                                         `
                                         // show map
                                         me.load_gmap(me.shift);
@@ -240,7 +242,6 @@ export default {
             }
         },
         load_gmap(position){
-            console.log(position);
             let me = this;
             let {latitude, longitude, geofence_radius} = position;
             var map = new google.maps.Map(document.getElementById('map'), {
@@ -379,7 +380,7 @@ export default {
                     recorder.onstop = resolve;
                     recorder.onerror = event => reject(event.name);
                 });
-
+                
                 return Promise.all([ stopped ]).then(() => data);
             })
             .then ((recordedChunks) => {
@@ -387,15 +388,17 @@ export default {
                     type: "video/mp4",
                 });
                 console.log(recordedBlob, skip_attendance);
+                me.stop_stream();
                 me.upload_file(recordedBlob, 'verify', log_type, skip_attendance);
             })
         },
         upload_file(file, method, log_type, skip_attendance){
             let me = this;
             me.stop_stream();
+            localStream.getVideoTracks()[0].stop();
             let method_map = {
-                'enroll': me.frappe.url+'/api/method/one_fm.api.v2.web.enroll',
-                'verify': me.frappe.url+'/api/method/one_fm.api.v2.web.verify'
+                'enroll': me.frappe.url+'/api/method/one_fm.api.v3.web.enroll',
+                'verify': me.frappe.url+'/api/method/one_fm.api.v3.web.verify'
             }
 
             return new Promise((resolve, reject) => {
@@ -420,32 +423,34 @@ export default {
                     if (xhr.readyState == XMLHttpRequest.DONE) {
                         $('#cover-spin').hide();
                         if (xhr.status === 200) {
-                        let r = null;
-                        try {
-                            r = JSON.parse(xhr.responseText);
-                            console.log(r);
-                            me.notify.success("Successful", r.message);
+                            let r = null;
+                            try {
+                                r = JSON.parse(xhr.responseText);
+                                if(r.message.error){
+                                    me.notify.error("warning", r.message.message);
+                                } else {
+                                    me.notify.success("success", r.message.message);
+                                }
+                                document.querySelector('#page-wrap-content').innerHTML = ``;
+                                me.initialize()
+                                //me.$router.push('/checkin');
+                            } catch (e) {
+                                r = xhr.responseText;
+                            }
+                        } else if (xhr.status === 403) {
+                            let response = JSON.parse(xhr.responseText);
+                            console.log(JSON.parse(xhr.responseText))
                             localStream.getVideoTracks()[0].stop();
-                            document.querySelector('#page-wrap-content').innerHTML = ``;
-                            me.initialize()
-                            //me.$router.push('/checkin');
-                        } catch (e) {
-                            r = xhr.responseText;
+                            me.notify.error("Not permitted", response._error_message)
+                        } else {
+                            let error = null;
+                            try {
+                            error = JSON.parse(xhr.responseText);
+                            } catch (e) {
+                            // pass
+                            }
+                            localStream.getVideoTracks()[0].stop();
                         }
-                    } else if (xhr.status === 403) {
-                        let response = JSON.parse(xhr.responseText);
-                        console.log(JSON.parse(xhr.responseText))
-                        localStream.getVideoTracks()[0].stop();
-                        me.notify.error("Not permitted", response._error_message)
-                    } else {
-                        let error = null;
-                        try {
-                        error = JSON.parse(xhr.responseText);
-                        } catch (e) {
-                        // pass
-                        }
-                        localStream.getVideoTracks()[0].stop();
-                    }
                     }
                 };
                 xhr.send(form_data);
