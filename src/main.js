@@ -9,7 +9,7 @@ import router from './router'
 import utils from './utils';
 
 //Add your Frappe backend's URL
-const frappe = new utils.Frappe("url", "id") //url and id goes in here
+const frappe = new utils.Frappe("", "") //url and id goes in here
 const notify = new utils.Notify(Swal);
 
 
