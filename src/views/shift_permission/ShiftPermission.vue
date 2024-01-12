@@ -1,15 +1,21 @@
 <script type="module">
 import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
+
+import Pagination from '@/views/Pagination.vue';
+
+
 
 export default {
     'name': 'ShiftPermissionList',
     data(){
         return {
+            currentPage: 1,
+         itemsPerPage: 10,
           employee_data: {},
           shifts: [],
         }
     },
+    
     mounted(){
       //   clear loader
       this.is_logged_in();
@@ -19,15 +25,31 @@ export default {
     },
     components: {
       Header,
-      Footer
+    Pagination
+    },
+    computed: {
+    totalShifts() {
+      return this.shifts.length;
+    },
+    totalPages() {
+      return Math.ceil(this.totalShifts / this.itemsPerPage);
+    },
+    displayedShifts() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.shifts.slice(start, end);
+    },
     },
     methods:{
+    handlePageChange(newPage) {
+      this.currentPage = newPage;
+    },
       openShiftPermission(){
         this.$router.push({ name: 'new_shift_permission' });
       },
       async getData(){
         // Get leave data
-        console.log("GET DATA")
+        
         console.log(this.employee_data.employee_id)
         this.frappe.customApiCall("api/method/one_fm.api.v2.shift_permission.list_shift_permission", {
             employee_id: this.employee_data.employee_id}, 'POST').then(res=>{
@@ -97,7 +119,7 @@ export default {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in shifts" :key="item.id">
+            <tr v-for="item in displayedShifts" :key="item.id">
               <td class="icon-box" :class="`bg-success`">
                 <ion-icon :name="`play-${item.log_type=='IN' ? 'back':'forward'}`"></ion-icon>
               </td>
@@ -115,18 +137,22 @@ export default {
     <!-- * App Capsule -->
     <!-- Body End -->
   
-    <!-- Footer Start -->
-    <Footer />
-    <!-- Footer End -->
-  
+    
+    <pagination v-if="totalPages > 1"
+    :current-page="currentPage"
+    :total-pages="totalPages"
+    @page-change="handlePageChange"
+    />
+
+    
   </template>
   
   <style>
   .floating-icon {
     position: absolute;
     top: 10%;
-    right: 5%;
-    font-size:70px;
+    right: 3.5%;
+    font-size:60px;
   }
   
   .table {

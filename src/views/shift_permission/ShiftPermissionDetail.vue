@@ -39,114 +39,104 @@ export default {
       }
     }
 }
+
 </script>
 <template>
-    <form class="needs-validation" style="max-width: 500px; margin: 0 auto;">
-      <h2 class="text-center mb-4">New Shift Assignment</h2>
-      <div class="form-group">
-        <label for="employeeId">Employee ID:</label>
-        <select class="form-control" id="employeeId" name="status_field">
-          <option value="">Select an option</option>
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
+    <div class="container card shadow d-flex justify-content-center mt-5">
+      <!-- nav options -->
+      <ul class="nav nav-pills mb-3 shadow-sm text-center" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Shift Permission Details</a>
+        </li>
+      </ul>
+
+      <!-- content -->
+      <div class="tab-content" id="pills-tabContent p-3">
+        <!-- 1st card -->
+        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+          <form class="search">
+            <div class = 'shift_permission' >
+                <input class="form-control mr-sm-2" type="search" placeholder="Employee Id" aria-label="Search..." />
+                <input class="form-control mr-sm-2" type="search" placeholder="Employee Name" aria-label="Search..." disabled/>
+                <input class="form-control mr-sm-2" type="date" placeholder="Date" aria-label="Search..." />
+                <input class="form-control mr-sm-2" type="search" placeholder="Log Type" aria-label="Search..." />
+                <input class="form-control mr-sm-2" type="search" placeholder="Permission Type" aria-label="Search..." />
+                <textarea class="form-control mr-sm-2" placeholder="Reason"></textarea>
+            </div>
+            <div class = 'shift_details' >
+                <input class="form-control mr-sm-2" type="search" placeholder="Shift Assignment" aria-label="Search..." />
+                <input class="form-control mr-sm-2" type="search" placeholder="Roster Type" aria-label="Search..." />
+                <input class="form-control mr-sm-2" type="search" placeholder="Approver" aria-label="Search..." />
+                <input class="form-control mr-sm-2" type="search" placeholder="Arrival Time" aria-label="Search..." />
+                <input class="form-control mr-sm-2" type="search" placeholder="Shift" aria-label="Search..." />
+                <input class="form-control mr-sm-2" type="search" placeholder="Shift Type" aria-label="Search..." />
+            </div>
+          </form>
+        </div>
       </div>
-  
-      <div class="form-group">
-  
-        
-  <label
-   
-  for="employeeName">Employee Name:</label>
-  
-        
-  <input
-   
-  type="text"
-   
-  class="form-control"
-   
-  id="employeeName"
-   
-  disabled>
-  
-      
-  </div>
-  
-  
-      
-  <div class="form-group">
-    <label for="date">Date:</label>
-    <input type="date" class="form-control" id="date">
-  
-  </div>
-  
-  
-      
-  
-  
+    </div>
+</template>
+
+<style >
+    body {
+  background-color: #bcd9f5;
+    }
+/* nav */
+.card {
+  max-width: 80%;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  max-height: 750%;
+}
+
+a.active {
+  border-bottom: 2px solid #55c57a;
+}
+
+.nav-link {
+  color: rgb(110, 110, 110);
+  font-weight: 500;
+}
+.nav-link:hover {
+  color: #55c57a;
+}
+
+.nav-pills .nav-link.active {
+  color: black;
+  background-color: white;
+  border-radius: 0.5rem 0.5rem 0 0;
+  font-weight: 600;
+}
+
+.tab-content {
+  padding-bottom: 1.3rem;
+}
+
+.form-control {
+  background-color: rgb(241, 243, 247);
+  border: none;
+}
+
+label {
+  font-weight: 500;
+  color: rgb(104, 104, 104);
+}
 
 
+.form-control:focus {
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 7px rgba(0, 0, 0, 0.2);
+}
 
-      <div class="form-group">
-        <label for="logType">Log Type:</label>
-        <select class="form-control" id="logType">
-          <option value="">Select an option</option>
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
-      </div>
-  
-      <div class="form-group">
-        <label for="permissionType">Permission Type:</label>
-        <select class="form-control" id="permissionType">
-          <option value="">Select an option</option>
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
-      </div>
+/* 1st card */
 
+ul {
+  list-style: none;
+  margin-top: 1rem;
+  padding-inline-start: 0;
+}
 
-    <div class="form-group">
-            <label for="date">Shift Assignment:</label>
-            <input type="input" class="form-control" id="date" disabled>
-    </div>
-    <div class="form-group">
-            <label for="date">Roster Type:</label>
-            <input type="input" class="form-control" id="date" disabled>
-    </div>
-    <div class="form-group">
-            <label for="date">Approver:</label>
-            <input type="input" class="form-control" id="date" disabled>
-    </div>
-    <div class="form-group">
-            <label for="date">Approver Name:</label>
-            <input type="input" class="form-control" id="date" disabled>
-    </div>
-    <div class="form-group">
-            <label for="date">Shift:</label>
-            <input type="input" class="form-control" id="date" disabled>
-    </div>
-    <div class="form-group">
-            <label for="date">Shift Type:</label>
-            <input type="input" class="form-control" id="date" disabled>
-    </div>
-    <div class="form-group">
-            <label for="date">Arrival Time:</label>
-            <input type="time" class="form-control" id="date" disabled>
-    </div>
-  
-
-    <div class="form-group">      
-        <label for="reason">Reason:</label>
-        <textarea class="form-control" id="reason" rows="3"></textarea>
-    </div>
-
-
-      <button type="submit" class="btn btn-primary btn-block">Submit</button>
-    </form>
-  </template>
-  
+.search {
+  padding: 0 1rem 0 1rem;
+}
+</style>
