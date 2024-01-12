@@ -41,10 +41,15 @@ export default {
     },
     },
     methods:{
-    handlePageChange(newPage) {
-      this.currentPage = newPage;
-    },
-      openShiftPermission(){
+      handlePageChange(newPage) {
+        this.currentPage = newPage;
+      },
+      openShiftPermission(shift_id){
+        console.log(shift_id)
+        this.$router.push({ name: 'shift_permission',params:{'id':shift_id}});
+        
+      },
+      newShiftPermission(){
         this.$router.push({ name: 'new_shift_permission' });
       },
       async getData(){
@@ -93,7 +98,7 @@ export default {
           
           <div class="floating-icon">
             <a href ="#">
-                <span title="Add Shift Permission" @click="openShiftPermission">
+                <span title="Add Shift Permission" @click="newShiftPermission">
                     <ion-icon name="add-circle-outline"></ion-icon>
                 </span>
                 
@@ -119,7 +124,8 @@ export default {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in displayedShifts" :key="item.id">
+            <tr v-for="item in displayedShifts" :key="item.id" class="clickable-row" @click="openShiftPermission(item.name)" >
+              
               <td class="icon-box" :class="`bg-success`">
                 <ion-icon :name="`play-${item.log_type=='IN' ? 'back':'forward'}`"></ion-icon>
               </td>
@@ -174,6 +180,14 @@ export default {
     color: black;
     
   }
+
+  .clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row :hover {
+  background-color:#3f2ca0; /* Add a hover effect if needed */
+}
   
 
 ion-icon {
