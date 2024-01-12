@@ -205,6 +205,18 @@ export default {
                             </a>
                         </li>
                         <li>
+                            <a href="/shift_permission_list" class="item">
+                                <div class="icon-box ">
+                                    
+                                    <ion-icon name="body-outline"></ion-icon>
+                                </div>
+                                
+                                <div class="in">
+                                    Shift Permission
+                                </div>
+                            </a>
+                        </li>
+                        <li>
                             <a href="/" class="item">
                                 <div class="icon-box ">
                                     <ion-icon name="log-out-outline"></ion-icon>
