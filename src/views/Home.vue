@@ -74,7 +74,6 @@ export default {
                 employee_id:this.employee_data.name,
                 date_type: "month"
             }, 'POST').then(res=>{
-                console.log(res)
             if (res.status_code==201){
                 var e_detail = res.data;
                 console.log(e_detail)
@@ -89,6 +88,8 @@ export default {
                 this.notify.error('Error', res.message)
             }
             })
+
+            this.frappe.customApiCall()
 
         },
      

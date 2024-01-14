@@ -3,31 +3,35 @@ import Header from '@/components/Header.vue'
 // import Footer from '@/components/Footer.vue'
 
 export default {
-    data(){
+    data() {
         return {
-          employee: {
-            employee_name:'',
-            employee_id:''
-          },
-          image:''
+            employee: {
+                employee_name: '',
+                employee_id: ''
+            },
+            image: '',
+            showSubMenu: false
         }
     },
-    mounted(){
-      //   clear loader
-      this.is_logged_in();
-      this.loader.end();
-      this.employee_data = JSON.parse(localStorage.frappeUser).employee_data;
-      this.url = JSON.parse(localStorage.frappeUser).url;
-      this.getData() // fetch leave balance
+    mounted() {
+        // clear loader
+        this.is_logged_in();
+        this.loader.end();
+        this.employee_data = JSON.parse(localStorage.frappeUser).employee_data;
+        this.url = JSON.parse(localStorage.frappeUser).url;
+        this.getData(); // fetch leave balance
     },
     components: {
-      Header,
+        Header,
     },
-    methods:{
-        async getData(){
+    methods: {
+        async getData() {
             this.employee.employee_name = this.employee_data.employee_name
             this.employee.employee_id = this.employee_data.employee_id
-            this.image = this.url+this.employee_data.image
+            this.image = this.url + this.employee_data.image
+        },
+        toggleSubMenu() {
+            this.showSubMenu = !this.showSubMenu;
         },
     }
 }
@@ -204,6 +208,20 @@ export default {
                                 </div>
                             </a>
                         </li>
+        
+
+                       <li>
+                            <a href="/penalty-management" class="item">
+                                <div class="icon-box ">
+                                    <ion-icon name="flash-outline"></ion-icon>
+                                </div>
+                                <div class="in">
+                                    Penalties
+                                </div>
+                            </a>
+                        </li>
+
+
                         <li>
                             <a href="/" class="item">
                                 <div class="icon-box ">
