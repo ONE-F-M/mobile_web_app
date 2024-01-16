@@ -6,6 +6,7 @@ import CheckinHistory from '@/views/CheckinHistory.vue'
 import Notification from '@/views/Notification.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
 import PenaltyManagement from '@/views/legal/penalty/PenaltyManagement.vue'
+import PenaltyIssuance from "@/views/legal/penalty/PenaltyIssuance.vue"
 
 
 const router = createRouter({
@@ -17,7 +18,8 @@ const router = createRouter({
     { path: '/checkin_history', name: 'checkin_history', component: CheckinHistory},
     { path: '/notification', name: 'notification', component: Notification},
     { path: '/forgot_password', name: 'forgot_password', component: ForgotPassword},
-    { path: '/penalty-management', name: 'penalties_management', component: PenaltyManagement},
+    { path: '/penalty-management', name: 'penalty_management', component: PenaltyManagement},
+    { path: "/penalty-management/issuance/", name: "penalty_issuance", component: PenaltyIssuance},
     { path: '/about', name: 'about', component: () => import('../views/AboutView.vue')}
   ]
 })
