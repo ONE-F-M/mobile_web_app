@@ -82,7 +82,7 @@ import Header from '@/components/authentication/components/Header.vue'
             this.loader.start();
             this.frappe.login(this.auth)
             .then(response => {
-                if (response.status_code == 200){
+                if (response.status == 200){
                     this.loader.end();
                     // this.notify.success(response.message, 'Logged in successfully')
                     this.$router.push('/home')
