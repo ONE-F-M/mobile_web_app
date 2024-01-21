@@ -88,31 +88,34 @@ export default {
   <Header />
   <!-- Header End -->
 
-  
 
-  <!-- Body Start -->
     <!-- App Capsule -->
     <div id="appCapsule">
 
 
-            <!-- Wallet Card -->
-            <div class="section employee-card-section pt-1">
-                <div class="employee-card">
-                    <!-- Balance -->
-                    <div class="balance">
-                        <div class="left">
-                            <h3 class="total">Penalty Management</h3>
-                        </div>
+  
+        <div class="section employee-card-section pt-1">
+            <div class="employee-card">
+                <!-- Balance -->
+                <div class="balance">
+                    <div class="left">
+                        <h3 class="total">Penalty Management</h3>
                     </div>
-                    <!-- * Balance -->
-
-                  <div class="issue-penalty-button">
-                      <a href="/penalty-management/issuance/"><button class="btn btn-primary">Issue Penalty</button></a>
-                  </div>
                 </div>
-                
+                <!-- * Balance -->
             </div>
-            <!-- Wallet Card -->
+        </div>
+
+
+        <br><br>
+        <div class="section">
+            <div class="tabs">
+              <button @click="currentTab = 'issuer'" :class="{ 'active-tab': currentTab === 'issuer' }">Issuer</button>
+              <button @click="currentTab = 'receiver'" :class="{ 'active-tab': currentTab === 'receiver' }">Receiver</button>
+            </div>
+        </div>
+
+      
 
 
 
@@ -184,7 +187,9 @@ export default {
           
             </div>
 
-            <!-- * Transactions -->
+            <router-link to="/penalty-management/issuance/" class="add-penalty-button bottom-right">
+                <ion-icon name="add-circle" style="color: #8B4513; font-size: 8em;"></ion-icon>
+            </router-link>
 
 
     </div>
@@ -200,6 +205,31 @@ export default {
 </template>
 
 <style scoped>
+
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tabs button.active-tab {
+  background-color: #50474a; /* Light brown when active */
+}
+
+.tab-content {
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
   .penalty-table {
     width: 100%;
     border-collapse: collapse;
@@ -227,6 +257,12 @@ export default {
   .issue-penalty-button {
     margin-top: 15px; 
   }
+
+  .bottom-right {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+    }
 
 </style>
 
