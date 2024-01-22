@@ -11,6 +11,7 @@
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' :4173 'cypress open --e2e'"
   },
   "dependencies": {
+    "ionicons": "^5.0.2",
     "pinia": "^2.0.28",
     "sweetalert2": "^11.7.2",
     "vue": "^3.2.45",

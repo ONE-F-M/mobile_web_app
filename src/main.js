@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 // ES6 Modules or TypeScript
 import Swal from 'sweetalert2'
+// import 'ionicons/dist/ionicons/css/ionicons.min.css';
+
 
 import App from './App.vue'
 import router from './router'
