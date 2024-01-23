@@ -6,9 +6,7 @@
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
-        <li class="page-item" v-for="page in pages" :key="page" :class="{ active: currentPage === page }">
-          <a class="page-link" @click.prevent="changePage(page)">{{ page }}</a>
-        </li>
+          <a class="page-link" @click.prevent="changePage(page)">{{ currentPage }}</a>
         <li class="page-item" :class="{ disabled: currentPage === totalPages }">
           <a class="page-link" @click.prevent="changePage(currentPage + 1)" aria-label="Next">
             <span aria-hidden="true">&raquo;</span>

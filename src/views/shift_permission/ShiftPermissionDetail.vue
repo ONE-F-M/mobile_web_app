@@ -499,8 +499,8 @@ export default {
                   
                   <v-col class="text-center">
                     <v-btn @click="showConfirmDialog('Save')" v-if="is_new"  style="background-color: #B87852; color: white; width: 100%; ">Save Shift Permission</v-btn>
-                    <v-btn @click="showConfirmDialog('Approve')" color ="#B87852" v-if="docstatus == 0 && isManager && workflow_state == 'Pending' "  style="background-color: #B87852; color: white; width: 100%; ">Approve Shift Permission</v-btn>
-                    <v-btn @click="showConfirmDialog('Reject')" color ="#B87852"  v-if="docstatus == 0 && workflow_state == 'Pending' && isManager" style="background-color: #B87852; color: white; width: 100%;" >Reject Shift Permission</v-btn>
+                    <v-btn @click="showConfirmDialog('Approve')" color ="#B87852" v-if="docstatus == 0 && isManager && workflow_state == 'Pending' "  style="background-color:  #ad7e63; color: white; width: 100%; ">Approve Shift Permission</v-btn>
+                    <v-btn @click="showConfirmDialog('Reject')" color ="#B87852"  v-if="docstatus == 0 && workflow_state == 'Pending' && isManager" style="background-color: red; color: white; width: 100%;" >Reject Shift Permission</v-btn>
                   </v-col>
                 </v-row>
               </v-card>

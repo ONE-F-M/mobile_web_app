@@ -161,12 +161,15 @@ export default {
   
     
     
-    
-    <pagination v-if="totalPages > 1"
-    :current-page="currentPage"
-    :total-pages="totalPages"
-    @page-change="handlePageChange"
-    />
+    <div class="pagination-container">
+      <pagination v-if="totalPages > 1"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        @page-change="handlePageChange"
+        />
+    </div>
+    <br>
+    <br>
     <Footer />
     
   </template>
@@ -216,5 +219,13 @@ ion-icon {
   
   color: #B87852;;
 }
+
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Adjust as needed */
+  }
   
   </style>
