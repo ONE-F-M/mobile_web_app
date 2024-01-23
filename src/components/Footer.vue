@@ -205,6 +205,23 @@ export default {
                             </a>
                         </li>
                         <li>
+                            <div class="dropdown" style="width: 100vw;font-size: medium;">
+                                    <a class="item" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <div class="icon-box">
+                                            <ion-icon name="medkit-outline"></ion-icon>
+                                        </div>
+                                        <div class="in">
+                                            Leave Application
+                                        </div>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="/apply_leave_application">New Leave Application</a>
+                                        <a class="dropdown-item" href="/view_leave_application">Leaves</a>
+                                    </div>
+                                </div>
+                        
+                        </li>
+                        <li>
                             <a href="/" class="item">
                                 <div class="icon-box ">
                                     <ion-icon name="log-out-outline"></ion-icon>
