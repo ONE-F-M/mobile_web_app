@@ -121,7 +121,7 @@ export default {
           </div>
         </div>
       </div>
-      <div v-if="this.approver === this.employee_data.user_id" style="display:flex; padding:10px">
+      <div v-if="this.approver === this.employee_data.user_id && this.status === 'Open'" style="display:flex; padding:10px">
           <button class="button-style" v-on:click="TakeAction(`Approved`)"> Approve </button>
           <button class="button-style"  v-on:click="TakeAction(`Rejected`)"> Reject</button>
       </div>
