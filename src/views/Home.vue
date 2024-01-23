@@ -48,7 +48,7 @@ export default {
             employee_id: this.employee_data.employee_id,
             leave_type: "Sick Leave"
             }, 'POST').then(res=>{
-                console.log(res)
+                
             if (res.status_code==200){
                 this.leave_balance = res.data
             } else {
@@ -61,7 +61,7 @@ export default {
             this.frappe.customApiCall(`api/method/one_fm.api.v2.attendance.get_attendance_list`, {
             employee:this.employee_data.name
             }, 'POST').then(res=>{
-                console.log(res)
+               
             if (res.status_code==200){
                 this.attendance_list = res.data;
                 // this.dataBank.attendance_list = res.data;
@@ -74,10 +74,10 @@ export default {
                 employee_id:this.employee_data.name,
                 date_type: "month"
             }, 'POST').then(res=>{
-                console.log(res)
+                
             if (res.status_code==201){
                 var e_detail = res.data;
-                console.log(e_detail)
+               
                 this.dashboard_details.leave = e_detail.leave_balance
                 this.dashboard_details.present = e_detail.days_worked
                 this.dashboard_details.penalties = e_detail.penalties
@@ -98,7 +98,7 @@ export default {
                 window.markers = [];
                 window.circles = [];
                 // JS API is loaded and available
-                console.log("Called")
+               
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         page.position = position;
@@ -155,7 +155,7 @@ export default {
             
         },
         load_gmap(position){
-            console.log(position);
+            
             let me = this;
             let {latitude, longitude, geofence_radius} = position;
             var map = new google.maps.Map(document.getElementById('map_home'), {

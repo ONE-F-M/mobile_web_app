@@ -137,7 +137,7 @@ import Header from '@/components/authentication/components/Header.vue'
             $('.verify_code').show()
             $('.reset_password').hide()
             this.auth.id = res.data['temp_id']
-            console.log(this.auth.id)
+            
           } else {
             this.notify.error('Error', res.message)
           }
@@ -149,8 +149,7 @@ import Header from '@/components/authentication/components/Header.vue'
             $('.update_new_password').show();
       },
       async update_password(){
-        console.log(this.auth.verify_code)
-        console.log(this.auth.id)
+       
         // Update Password
         this.frappe.customApiCall("api/method/one_fm.api.v2.authentication.update_password",{
             otp: this.auth.verify_code, id: this.auth.id, employee_id:this.auth.employee_id, new_password:this.auth.new_password}, 'POST').then(res=>{

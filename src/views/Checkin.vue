@@ -56,7 +56,7 @@ export default {
                 if (res.data){
                     let {image, employee_name, company, department, designation, enrolled} = res.data[0];
                     image = this.url+image
-                    console.log(image)
+                    
                     let card = `
                     <div class="col-md-12 col-xs-12" style="text-align:center">
                         <img src="${image}" alt="Profile" style="width:150px" height="150px">
@@ -65,7 +65,7 @@ export default {
                     </div>`;
                     $('#profile-card').prepend(card);
                     document.enrolled = enrolled;
-                    console.log(document.enrolled)
+                    
                     if(!enrolled){
                         $(enrollButton).show();	
                     }
@@ -143,7 +143,7 @@ export default {
                     let recordedBlob = new Blob(recordedChunks, {
                         type: "video/mp4",
                     });
-                    console.log(recordedBlob);
+                    
                     me.upload_file(recordedBlob, 'enroll');
                 })	
             });
@@ -155,7 +155,7 @@ export default {
                 {}, 'GET').then(res=>{
                     if (!res.exc) {
                         // code snippet
-                        console.log(res)
+                        
                         if(res.message && page.enrolled){
                             $('#endButton').show();
                             $('#hourlyButton').show();
@@ -177,7 +177,7 @@ export default {
                 window.markers = [];
                 window.circles = [];
                 // JS API is loaded and available
-                console.log("Called")
+                
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         page.position = position;
@@ -186,10 +186,10 @@ export default {
                             {employee_id:me.employee_data.employee_id, latitude:position.coords.latitude,
                             longitude:position.coords.longitude}, 'POST').then(res=>{
                                 if(res.status_code==200){
-                                    console.log(position.coords, res)
+                                    
                                     if (res.data.user_within_geofence_radius){
                                         me.shift = res.data.shift;
-                                        console.log(me.shift)
+                                        
                                         // show buttons
                                         $('#button-controls').show();
                                         // add shift assignment to screen
@@ -242,7 +242,7 @@ export default {
             }
         },
         load_gmap(position){
-            console.log(position);
+            
             let me = this;
             let {latitude, longitude, geofence_radius} = position;
             var map = new google.maps.Map(document.getElementById('map'), {
@@ -261,7 +261,7 @@ export default {
         },
         addYourLocationButton(map, marker){
             let me = this;
-            console.log(map, marker);
+            
             var controlDiv = document.createElement('div');
 
             var firstChild = document.createElement('button');
@@ -388,7 +388,7 @@ export default {
                 let recordedBlob = new Blob(recordedChunks, {
                     type: "video/mp4",
                 });
-                console.log(recordedBlob, skip_attendance);
+                
                 me.upload_file(recordedBlob, 'verify', log_type, skip_attendance);
             })
         },
@@ -425,7 +425,7 @@ export default {
                         let r = null;
                         try {
                             r = JSON.parse(xhr.responseText);
-                            console.log(r);
+                            
                             me.notify.success("Successful", r.message);
                             localStream.getVideoTracks()[0].stop();
                             document.querySelector('#page-wrap-content').innerHTML = ``;
@@ -436,7 +436,7 @@ export default {
                         }
                     } else if (xhr.status === 403) {
                         let response = JSON.parse(xhr.responseText);
-                        console.log(JSON.parse(xhr.responseText))
+                        
                         localStream.getVideoTracks()[0].stop();
                         me.notify.error("Not permitted", response._error_message)
                     } else {

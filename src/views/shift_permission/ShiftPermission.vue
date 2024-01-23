@@ -1,6 +1,6 @@
 <script type="module">
 import Header from '@/components/Header.vue'
-
+import Footer from '@/components/Footer.vue'
 import Pagination from '@/views/Pagination.vue';
 
 
@@ -25,7 +25,8 @@ export default {
     },
     components: {
       Header,
-    Pagination
+      Pagination,
+      Footer
     },
     computed: {
     totalShifts() {
@@ -45,7 +46,7 @@ export default {
         this.currentPage = newPage;
       },
       openShiftPermission(shift_id){
-        console.log(shift_id)
+        
         this.$router.push({ name: 'shift_permission',params:{'id':shift_id}});
         
       },
@@ -55,11 +56,11 @@ export default {
       async getData(){
         // Get leave data
         
-        console.log(this.employee_data.employee_id)
-        this.frappe.customApiCall("api/method/one_fm.api.v2.shift_permission.list_shift_permission", {
+        
+        this.frappe.customApiCall("api/method/one_fm.api.v1.shift_permission.list_shift_permission", {
             employee_id: this.employee_data.employee_id}, 'POST').then(res=>{
           if (res.status_code==200){
-            console.log(res)
+            
             this.shifts = res.data
           } else {
             this.notify.error('Error', res.message)
@@ -74,8 +75,9 @@ export default {
 
 
 <template>
+  <Header/>
     <!-- Header Start -->
-    <Header />
+    
     <!-- Header End -->
   
     <!-- Floating Icon -->
@@ -89,22 +91,15 @@ export default {
       <!-- Wallet Card -->
       <div class="section employee-card-section pt-1">
         <div class="employee-card">
+          
           <!-- Balance -->
-          <div class="balance">
-            <div class="text-center">
-              <h3 class="total text-center">Shift Permissions</h3>
+          <div class="balance text-center">
+            <div >
+              <h3 class="total">Shift Permissions</h3>
             </div>
           </div>
           
-          <div class="floating-icon">
-            <a href ="#">
-                <span title="Add Shift Permission" @click="newShiftPermission">
-                    <ion-icon name="add-circle-outline"></ion-icon>
-                </span>
-                
-            </a>
-            
-        </div>
+          
           <!-- * Balance -->
         </div>
       </div>
@@ -112,51 +107,74 @@ export default {
       <!-- Wallet Card -->
   
       <!-- Transactions -->
-      <div class="section mt-4">
-        <table class="table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Employee Name</th>
-              <th>Date</th>
-              <th>Permission Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in displayedShifts" :key="item.id" class="clickable-row" @click="openShiftPermission(item.name)" >
-              
-              <td class="icon-box" :class="`bg-success`">
-                <ion-icon :name="`play-${item.log_type=='IN' ? 'back':'forward'}`"></ion-icon>
-              </td>
-              <td>{{item.name}}</td>
-              <td>{{item.emp_name}}</td>
-              <td>{{item.date}}</td>
-              <td>{{item.permission_type}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      
       <!-- * Transactions -->
   
     </div>
+    
+    <div class="section mt-4">
+      <ul class="listview image-listview inset">
+        <li  v-for="item in displayedShifts" :key="item.id" class="mb-3 clickable-row">
+          <div class="item d-flex">
+            <v-row  @click="openShiftPermission(item.name)" justify="space-between">
+              <v-col cols="2">
+                <div v-bind:class="`icon-box bg-${item.log_type=='IN' ? 'success':'danger'}`">
+                  <ion-icon v-bind:name="`play-${item.log_type=='IN' ? 'back':'forward'}`"></ion-icon>
+                  
+                </div>
+              </v-col>
+              <v-col cols="4">
+                <div>
+                  <p class="text">{{item.emp_name}}</p>
+                </div>
+              </v-col>
+              <v-col cols="3">
+                <div class="in">
+                  <p class="text">{{item.date}}</p>
+                  
+                </div>
+              </v-col>
+              <v-col cols="3">
+                <div class="in">
+                  
+                  <span class="text">{{item.workflow_state}}</span>
+                </div>
+              </v-col>
+            </v-row>
+          </div>
+        </li>
+      </ul>
+  </div>
+  <div class="floating-icon">
+        <a href ="#">
+                <span title="Add Shift Permission" @click="newShiftPermission">
+                  <ion-icon id ="addButton" href="/shift_permission" name="add-circle-sharp"></ion-icon>
+                </span>
+                
+          </a>
+  </div>
+
+
+
     <!-- * App Capsule -->
     <!-- Body End -->
   
+    
+    
     
     <pagination v-if="totalPages > 1"
     :current-page="currentPage"
     :total-pages="totalPages"
     @page-change="handlePageChange"
     />
-
+    <Footer />
     
   </template>
   
   <style>
   .floating-icon {
-    position: absolute;
-    top: 10%;
+    position: fixed;
+    bottom: 10%;
     right: 3.5%;
     font-size:60px;
   }
@@ -193,4 +211,10 @@ export default {
 ion-icon {
     pointer-events: none;
     }
+
+#addButton{
+  
+  color: #B87852;;
+}
+  
   </style>
