@@ -488,12 +488,6 @@ a:hover, a:active, a:focus {
   margin-bottom: 6px;
 }
 
-.nav-pills .nav-link.active{
-  background-color: #B87852;
-}
-.nav-link {
-  color: #B87852;
-}
 .action-group {
   display: flex;
   align-items: flex-start;
@@ -968,7 +962,7 @@ h3,
 h4,
 h5,
 h6 {
-   color: rgb(0, 0, 0);
+  color: #27173E;
   margin: 0 0 10px 0;
 }
 
@@ -978,7 +972,7 @@ h3 small,
 h4 small,
 h5 small,
 h6 small {
-  color: rgb(255, 255, 255);
+  color: rgba(39, 23, 62, 0.6);
 }
 
 h1 .badge,
@@ -1534,6 +1528,7 @@ a.badge-dark {
   top: 50%;
   margin-top: -9px;
 }
+
 .image-listview > li.active .item {
   background: rgba(220, 220, 233, 0.3) !important;
 }
@@ -1880,10 +1875,6 @@ a.badge-dark {
   background: #05D0A4 !important;
   border-color: #05D0A4 !important;
   color: #FFFFFF !important;
-}
-
-.icon-box:after {
-  border: 1px solid blue;
 }
 
 .btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active {
@@ -3718,58 +3709,6 @@ textarea,
   width: 0;
   height: 0;
 }
-/* input[type="file"]::file-selector-button {
-  width: 136px;
-  color: transparent;
-} */
-/* Faked label styles and icon */
-.upload-file::before {
-  position: absolute;
-  pointer-events: none;
-  top: 10px;
-  left: 16px;
-  height: 20px;
-  width: 20px;
-  content: "";
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230964B0'%3E%3Cpath d='M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z'/%3E%3C/svg%3E");
-}
-
-.upload-file::after {
-  position: absolute;
-  pointer-events: none;
-  top: 11px;
-  left: 40px;
-  color: #0964b0;
-  content: "Upload File";
-}
-input[type="file"]::file-selector-button {
-  border-radius: 4px;
-  padding: 0 16px;
-  height: 40px;
-  cursor: pointer;
-  border: 1px solid rgba(0, 0, 0, 0.16);
-  box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05);
-  margin-right: 16px;
-  transition: background-color 200ms;
-}
-
-input[type="date"],
-input[type="time"],
-input[type="datetime-local"],
-input[type="month"] {
-  line-height: 30px;
-  padding: 2px;
-  margin: 2px;  
-	border: 2px solid #808184;
-  width: 50vw;
-	color: #888;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	-moz-transition: all 0.2s;
-	-o-transition: all 0.2s;
-	transition: all 0.2s;
-}
 
 .custom-file-upload label {
   z-index: 1;
@@ -5167,28 +5106,13 @@ input[type="month"] {
   position: relative;
   z-index: 1;
 }
-.shift-details-card, .detail_card {
+.shift-details-card{
   background: #ffffff;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.09);
   border-radius: 10px;
   padding: 20px 24px;
   position: relative;
   z-index: 1;
-}
-.form_card {
-  color: white;
-  background: #4f4f4f;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.09);
-  border-radius: 10px;
-  padding: 10px 15px;
-  position: relative;
-  z-index: 1;
-}
-.button-style{
-  background-color:#B87852;
-  border-radius:10px; 
-  padding:10px; 
-  width: 50vw
 }
 .employee-card .balance {
   display: flex;
