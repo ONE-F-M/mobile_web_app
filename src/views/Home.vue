@@ -49,11 +49,11 @@ export default {
             leave_type: "Sick Leave"
             }, 'POST').then(res=>{
                 console.log(res)
-            if (res.status_code==200){
-                this.leave_balance = res.data
-            } else {
-                this.notify.error('Error', res.message)
-            }
+                if (res.status_code==200){
+                    this.leave_balance = res.data
+                } else {
+                    this.notify.error('Error', res.message)
+                }
             })
             // End get leave 
 
