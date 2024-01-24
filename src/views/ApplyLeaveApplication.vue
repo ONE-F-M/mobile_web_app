@@ -79,12 +79,7 @@ export default {
           else if(type ==='to'){
             this.to_date = event.target.value
           }
-          else{
-            var file =  event.target.files[0]
-            this.proof_document['attachment_name'] = event.target.files[0].name
-            this.proof_document['attachment'] = ""
-            this.convertToBase64(file)
-          }
+          
           if(this.from_date  && this.to_date && this.leave_type){
               this.frappe.customApiCall("api/method/hrms.hr.doctype.leave_application.leave_application.get_number_of_leave_days",{
                 "employee": this.employee_data.name,
@@ -99,25 +94,33 @@ export default {
             })
           }
         },
+        async fetchFile(event){
+          var file =  event.target.files[0]
+          let result = await this.convertToBase64(file);
+          this.proof_document.attachment_name = event.target.files[0].name
+          this.proof_document.attachment = result.replace('data:application/pdf;base64,','')  
+        },
         submit : function(){
           this.frappe.customApiCall("api/method/one_fm.api.v1.leave_application.create_new_leave_application",{
-            "employee_id": this.employee_data.employee_id, "from_date": this.from_date, "to_date": this.to_date, "leave_type": this.leave_type, "reason": this.reason, "proof_document": this.proof_document}, 'POST').then(res=>{
-                if (res.message != undefined){
-                  console.log(res)
+            "employee_id": this.employee_data.employee_id, "from_date": this.from_date, "to_date": this.to_date, "leave_type": this.leave_type, "reason": this.reason, "proof_document": JSON.stringify([this.proof_document])}, 'POST').then(res=>{
+                if (res.message === "Success"){
+                  this.notify.success("Successfully Applied!")
+                  window.location.reload();
+
                 } else {
                   this.notify.error('Error', res.message)
                 }
             })
         },
         convertToBase64(file) {
-          fetch(file).then(r => r.blob()).then(blob => {
-              var reader = new FileReader();
-              reader.onload = function() {
-                 b64 = reader.result.replace(/^data:.+;base64,/, '');
-                return b64   
-              };
-              reader.readAsDataURL(blob);
-            });
+          return new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onerror = reject
+          reader.onload = () => {
+            resolve(reader.result)
+          }
+          reader.readAsDataURL(file)
+        })
         }
      }
 }
@@ -162,11 +165,7 @@ export default {
           </div>
           <div v-if="this.leave_type === 'Sick Leave'">
             <h5 style="color:#B87852;"> Proof Document:</h5>
-            <label for="upload-file" class="btn" >  
-              <ion-icon name="document-attach-outline"></ion-icon>
-              Attach File 
-            </label>
-            <input id="upload-file" type="file" style="display: none"  @change="onChange($event, 'proof_document')"/>
+            <input id="upload-file" class="upload-file" type="file"  @change="fetchFile($event)"/>
           </div>
           <div>
             <h5 style="color:white;"> From Date:</h5>

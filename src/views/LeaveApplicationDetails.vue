@@ -60,6 +60,7 @@ export default {
             console.log(res)
             if(res.message == "Success"){
               this.notify.success("Success", `Leave Application ${status}`)
+              window.location.reload();
             }
             else{
               this.notify.error("Error", 'There was an error while approving the leave.')
