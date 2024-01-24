@@ -18,8 +18,9 @@ import router from './router'
 import utils from './utils';
 
 //Add your Frappe backend's URL
-const frappe = new utils.Frappe("http://localhost:8000", "0412d50b81") //url and id goes in here
-// const frappe = new utils.Frappe("https://staging.one-fm.com", "0412d50b81") //url and id goes in here
+// const frappe = new utils.Frappe("http://localhost:8000", "0412d50b81") //url and id goes in here
+
+const frappe = new utils.Frappe("url", "id")
 const notify = new utils.Notify(Swal);
 
 
