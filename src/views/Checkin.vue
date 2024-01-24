@@ -151,10 +151,11 @@ export default {
         },
         check_existing(page){
             let me = this;
-            me.frappe.customApiCall(`api/method/one_fm.api.v2.web.check_existing`,
+            me.frappe.customApiCall(`api/method/one_fm.utils.check_existing`,
                 {}, 'GET').then(res=>{
                     if (!res.exc) {
                         // code snippet
+                        console.log(res)
                         if(res.message && page.enrolled){
                             $('#endButton').show();
                             $('#hourlyButton').show();
@@ -187,18 +188,19 @@ export default {
                                 if(res.status_code==200){
                                     console.log(position.coords, res)
                                     if (res.data.user_within_geofence_radius){
-                                        me.shift = res.data;
+                                        me.shift = res.data.shift;
+                                        console.log(me.shift)
                                         // show buttons
                                         $('#button-controls').show();
                                         // add shift assignment to screen
                                         document.querySelector('#__site_name__').innerHTML = `
-                                            <h5><b>Site: </b> ${me.shift.site_name}</h5>
-                                            <h6><b>Site: </b> ${me.shift.shift_assignment.shift}</h6>
-                                            <h5><b>Start: </b> <i class="text-success">${me.shift.shift_assignment.start_datetime}</i></h5>
-                                            <h5><b>End: </b> <i class="text-danger">${me.shift.shift_assignment.end_datetime}</i></h5>
+                                            <h5><b>Site: </b> ${me.shift.site}</h5>
+                                            <h6><b>Site: </b> ${me.shift.shift}</h6>
+                                            <h5><b>Start: </b> <i class="text-success">${me.shift.start_datetime}</i></h5>
+                                            <h5><b>End: </b> <i class="text-danger">${me.shift.end_datetime}</i></h5>
                                         `
                                         // show map
-                                        me.load_gmap(me.shift);
+                                        me.load_gmap(res.data);
                                         $('#sync-location').hide();
                                     } else {
                                         me.notify.error('Oops', 'You are outside the site location. Please try again')
