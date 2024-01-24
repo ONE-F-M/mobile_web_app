@@ -5,6 +5,9 @@ import Checkin from '@/views/Checkin.vue'
 import CheckinHistory from '@/views/CheckinHistory.vue'
 import Notification from '@/views/Notification.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
+import ApplyLeaveApplication from '@/views/Leave_Application/Create.vue'
+import ViewLeaveApplication from '@/views/Leave_Application/View.vue'
+import LeaveApplicationDetails from '@/views/Leave_Application/Detail.vue'
 
 
 
@@ -17,6 +20,9 @@ const router = createRouter({
     { path: '/checkin_history', name: 'checkin_history', component: CheckinHistory},
     { path: '/notification', name: 'notification', component: Notification},
     { path: '/forgot_password', name: 'forgot_password', component: ForgotPassword},
+    { path: '/leave_application/create', name: 'apply_leave_application', component: ApplyLeaveApplication},
+    { path: '/leave_application/view', name: 'view_leave_application', component: ViewLeaveApplication},
+    { path: '/leave_application/:leave_id', name: 'leave_application_details', component: LeaveApplicationDetails},
     { path: '/about', name: 'about', component: () => import('../views/AboutView.vue')}
   ]
 })
