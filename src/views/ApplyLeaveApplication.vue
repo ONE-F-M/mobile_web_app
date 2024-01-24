@@ -94,12 +94,6 @@ export default {
             })
           }
         },
-        async fetchFile(event){
-          var file =  event.target.files[0]
-          let result = await this.convertToBase64(file);
-          this.proof_document.attachment_name = event.target.files[0].name
-          this.proof_document.attachment = result.replace('data:application/pdf;base64,','')  
-        },
         submit : function(){
           this.frappe.customApiCall("api/method/one_fm.api.v1.leave_application.create_new_leave_application",{
             "employee_id": this.employee_data.employee_id, "from_date": this.from_date, "to_date": this.to_date, "leave_type": this.leave_type, "reason": this.reason, "proof_document": JSON.stringify([this.proof_document])}, 'POST').then(res=>{
@@ -111,6 +105,12 @@ export default {
                   this.notify.error('Error', res.message)
                 }
             })
+        },
+        async fetchFile(event){
+          var file =  event.target.files[0]
+          let result = await this.convertToBase64(file);
+          this.proof_document.attachment_name = event.target.files[0].name
+          this.proof_document.attachment = result.replace('data:application/pdf;base64,','')  
         },
         convertToBase64(file) {
           return new Promise((resolve, reject) => {
