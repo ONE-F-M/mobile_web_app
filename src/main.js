@@ -2,6 +2,15 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 // ES6 Modules or TypeScript
 import Swal from 'sweetalert2'
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
+const vuetify = createVuetify({
+  components,
+  directives,
+})
 
 import App from './App.vue'
 import router from './router'
@@ -52,5 +61,6 @@ app.config.globalProperties.is_logged_in = ()=>{
 }
 app.use(createPinia())
 app.use(router)
+app.use(vuetify)
 
 app.mount('#app')
