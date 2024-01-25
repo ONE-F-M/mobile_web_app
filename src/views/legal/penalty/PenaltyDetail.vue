@@ -77,11 +77,28 @@ export default {
         }
     },
     openRejectionModal(item) {
-        console.log(item)
         this.currentRejectedItem = item;
         this.rejectionMessage = '';
         $('#rejectionModal').modal('show');
       },
+
+    acceptPenaltyWithRecording(item) {
+    // Open the recording modal
+    $('#recordingModal').modal('show');
+
+    // Start the video recording process
+    this.startRecording(item);
+  },
+  startRecording(item) {
+    // Your video recording logic goes here
+    // You can use the existing code related to video recording
+    // For example, the logic in the `send_log` method or a similar method
+    // Make sure to handle stopping the recording and any UI updates
+    // based on the recording process.
+
+    // Once recording is complete or if there is an error, close the modal
+    $('#recordingModal').modal('hide');
+  },
   }
 }
 </script>
@@ -127,7 +144,7 @@ export default {
   
           <!-- Accept and Reject buttons -->
           <div v-if="showActionButtons" class="action-buttons">
-          <button @click="acceptPenalty(penalty_details)" class="accept-button">Accept</button>
+          <button @click="acceptPenaltyWithRecording(penalty_details)" class="accept-button">Accept</button>
           <button @click="openRejectionModal(penalty_details)" class="reject-button">Reject</button>
         </div>
         </div>
@@ -154,6 +171,30 @@ export default {
             </div>
         </div>
         </div>
+    </div>
+
+
+
+    <!-- Recording Modal -->
+    <div class="modal fade" id="recordingModal" tabindex="-1" role="dialog" aria-labelledby="recordingModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="recordingModalLabel">Video Recording</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- You can customize the modal body based on your video recording requirements -->
+            <p>Video recording is in progress...</p>
+            <!-- Add any necessary video recording UI elements here -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
     </div>
   
     <!-- Footer Start -->
