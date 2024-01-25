@@ -1,4 +1,5 @@
 <script type="module">
+import profilePlaceholder from '@/assets/profile_placeholder.jpg';
 import Header from '@/components/Header.vue'
 // import Footer from '@/components/Footer.vue'
 
@@ -27,7 +28,8 @@ export default {
         async getData(){
             this.employee.employee_name = this.employee_data.employee_name
             this.employee.employee_id = this.employee_data.employee_id
-            this.image = this.url+this.employee_data.image
+            this.employee_data.image ? this.image = this.url+this.employee_data.image : this.image = profilePlaceholder
+                
         },
     }
 }
@@ -64,7 +66,9 @@ export default {
                     <!-- profile box -->
                     <div class="profileBox pt-2 pb-2">
                         <div class="image-wrapper">
+                            
                             <img :src="image"  alt="image" class="imaged  w36">
+                            
                         </div>
                         <div class="in">
                             <strong>{{ employee.employee_name }}</strong>
@@ -203,6 +207,23 @@ export default {
                                     Checkin History
                                 </div>
                             </a>
+                        </li>
+                        <li>
+                            <div class="dropdown" style="width: 100vw;font-size: medium;">
+                                    <a class="item" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <div class="icon-box ">
+                                            <ion-icon name="medkit-outline"></ion-icon>
+                                        </div>
+                                        <div class="in">
+                                            Shift Permission
+                                        </div>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="/shift_permission">New Shift Permission</a>
+                                        <a class="dropdown-item" href="/shift_permission_list">Shift Permissions</a>
+                                    </div>
+                                </div>
+                        
                         </li>
                         <li>
                             <a href="/" class="item">

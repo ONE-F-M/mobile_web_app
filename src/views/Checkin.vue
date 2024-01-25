@@ -214,7 +214,7 @@ export default {
             
         },
         load_gmap(position){
-            console.log(position);
+            
             let me = this;
             let {latitude, longitude, geofence_radius} = position;
             var map = new google.maps.Map(document.getElementById('map'), {
@@ -233,7 +233,7 @@ export default {
         },
         addYourLocationButton(map, marker){
             let me = this;
-            console.log(map, marker);
+            
             var controlDiv = document.createElement('div');
 
             var firstChild = document.createElement('button');
@@ -360,7 +360,7 @@ export default {
                 let recordedBlob = new Blob(recordedChunks, {
                     type: "video/mp4",
                 });
-                console.log(recordedBlob, skip_attendance);
+                
                 me.upload_file(recordedBlob, 'verify', log_type, skip_attendance);
             })
         },
