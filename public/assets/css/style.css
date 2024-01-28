@@ -1559,7 +1559,7 @@ a.badge-dark {
 }
 
 .listview.no-line > li:after,
-.listview.no-line .item :after {
+.listview.no-line .item :after {
   display: none;
 }
 

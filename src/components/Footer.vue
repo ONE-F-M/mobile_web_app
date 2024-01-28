@@ -219,8 +219,8 @@ export default {
                                         </div>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="/leave_application/create">Create</a>
-                                        <a class="dropdown-item" href="/leave_application/view">View</a>
+                                        <a class="dropdown-item" href="/leave_application/create">New Leave Application</a>
+                                        <a class="dropdown-item" href="/leave_application/view">Leave Applications</a>
                                     </div>
                                 </div>
                         
