@@ -1,6 +1,9 @@
 <script type="module">
+
+import { getCurrentInstance } from 'vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
+import VideoJSRecord from '@/components/VideoJSRecord.vue'
 
 export default {
     'name': 'Checkin',
@@ -10,6 +13,7 @@ export default {
           enrolled: 0,
           csrf_token: '',
           page: document,
+          recordTimer: 0,
           shift: {
             site_name: ''
           }
@@ -18,7 +22,6 @@ export default {
     mounted(){
       //   clear loader
       let me = this;
-
       me.is_logged_in();
       me.loader.end();
       me.employee_data = JSON.parse(localStorage.frappeUser).employee_data;
@@ -28,12 +31,12 @@ export default {
     },
     components: {
       Header,
-      Footer
+      Footer,
+      VideoJSRecord
     },
     methods:{
         async initialize(){
             let me = this;
-            me.set_page_content();
             let preview = document.getElementById("preview");
             let enroll_preview = document.getElementById("enroll_preview");
             let startButton = document.getElementById("startButton");
@@ -44,19 +47,17 @@ export default {
             let enrollButton = document.getElementById("enrollButton");
             me.page = document;
 
-            //  add events to buttons
-            [startButton, endButton, hourlyButton, enrollButton].forEach(item=>{
-                item.addEventListener('click', (e)=>{
-                    $('#profile-card').hide();
-                })
-            })
             // Check enrollment
             me.frappe.customApiCall(`api/resource/Employee?filters=[["name","=","${me.employee_data.name}"]]&fields="*"`,
                 {}, 'GET').then(res=>{
                 if (res.data){
                     let {image, employee_name, company, department, designation, enrolled} = res.data[0];
-                    image = image ? this.url+image: 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
-                    console.log(image)
+                    if(!image){
+                        image = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png";
+                    } else {
+                        image = this.url+image
+                    }
+                    
                     let card = `
                     <div class="col-md-12 col-xs-12" style="text-align:center">
                         <img src="${image}" alt="Profile" style="width:150px" height="150px">
@@ -65,110 +66,73 @@ export default {
                     </div>`;
                     $('#profile-card').prepend(card);
                     document.enrolled = enrolled;
-                    console.log(document.enrolled)
-                    if(!enrolled){
-                        $(enrollButton).show();	
-                    }
-                    else{
-                        me.check_existing(me.page);
-                    }
+                    // start verification/enrollment
+                    me.get_location(me.page);
+                    locationButton.addEventListener("click", function() {
+                        me.get_location(me.page);
+                    }, false);
+                    
                 }
             })
-            // get location
-            me.get_location(me.page);
-            locationButton.addEventListener("click", function() {
-                me.get_location(me.page);
-            }, false);
 
-            enrollButton.addEventListener("click", function() {
-                $('.enrollment').show();
-                $('.verification').hide();
-                $('#cues').empty().append(`<div class="alert alert-danger">Please remove your spectacles. Follow the instructions here after clicking Enroll button.</div>`);
-            }, false);
+            
 
             errorButton.addEventListener("click", function() {
+                $('#profile-card').hide();
                 me.make_support_issue();
-            }, false);
-
-            startButton.addEventListener("click", function() {
-               me.send_log('IN', 0)
             }, false);	
             
             hourlyButton.addEventListener("click", function() {
+                $('#profile-card').hide();
                 me.send_log('IN', 1)
             }, false);		
-            
-            endButton.addEventListener("click", function() {
-                me.send_log('OUT', 0)
-            }, false);	
-            
-            $('#enroll').on('click', function(){
-                me.show_cues();
-                navigator.mediaDevices.getUserMedia({
-                    video: {
-                        width: { ideal: 640 },
-                        height: { ideal: 360 },
-                        frameRate: {ideal: 4},//, max: 20},
-                        facingMode: 'user'
-                    },
-                    audio: false
-                })
-                .then((stream) => {			
-                    window.localStream = stream;
-                    enroll_preview.srcObject = stream;
-                    enroll_preview.captureStream = enroll_preview.captureStream || enroll_preview.mozCaptureStream;
-                    return new Promise(resolve => enroll_preview.onplaying = resolve);
-                })
-                .then(() => {
-                    let recorder = new MediaRecorder(enroll_preview.captureStream());
-
-                    setTimeout(function(){ 
-                        $('#cover-spin').show(0);
-                        recorder.stop(); 
-                        stop(enroll_preview);
-                    }, 13000);
-                    let data = [];
-            
-                    recorder.ondataavailable = event => data.push(event.data);
-                    recorder.start();
-            
-                    let stopped = new Promise((resolve, reject) => {
-                        recorder.onstop = resolve;
-                        recorder.onerror = event => reject(event.name);
-                    });
-            
-                    return Promise.all([ stopped ]).then(() => data);
-                })
-                .then ((recordedChunks) => {
-                    let recordedBlob = new Blob(recordedChunks, {
-                        type: "video/mp4",
-                    });
-                    console.log(recordedBlob);
-                    me.upload_file(recordedBlob, 'enroll');
-                })	
-            });
 
         },
-        check_existing(page){
+        ready_checkin(res){
             let me = this;
-            me.frappe.customApiCall(`api/method/one_fm.api.v2.web.check_existing`,
-                {}, 'GET').then(res=>{
-                    if (!res.exc) {
-                        // code snippet
-                        if(res.message && page.enrolled){
-                            $('#endButton').show();
-                            $('#hourlyButton').show();
-                            $('#enrollButton').hide();
-                            $('#startButton').hide();
-                        }
-                        else{
-                            $('#endButton').hide();
-                            $('#hourlyButton').show();
-                            $('#enrollButton').hide();
-                            $('#startButton').show();
-                        }
+            $('#profile-card').show();
+            if (me.page.enrolled){
+                this.recordTimer = 5;
+                $('#enrollSection').hide();
+                if(me.res.data.log_type=='OUT'){
+                    $('#endButton').show();
+                    // $('#hourlyButton').show();
+                    $('#enrollButton').hide();
+                    $('#startButton').hide();
+                    endButton.addEventListener("click", function() {
+                        $('#profile-card').hide();
+                        $('.verification').show();
+                        $('.vjs-record.vjs-device-button.vjs-control.vjs-icon-video-perm').click();
+                        me.countdown();
+                    }, false);
                 }
-            })
+                else{
+                    $('#endButton').hide();
+                    // $('#hourlyButton').show();
+                    $('#enrollButton').hide();
+                    $('#startButton').show();
+                    // enable record
+                    startButton.addEventListener("click", function() {
+                        $('#profile-card').hide();
+                        $('.verification').show();
+                        $('.vjs-record.vjs-device-button.vjs-control.vjs-icon-video-perm').click();
+                        me.countdown();
+                    }, false);
+                }
+            } else {
+                this.recordTimer = 13;
+                $('#enrollButton').show()
+                document.querySelector('#enrollButton').addEventListener("click", function() {
+                    $('#profile-card').hide();
+                    $('#enrollButton').hide();
+                    $('.verification').show();
+                    $('.vjs-record.vjs-device-button.vjs-control.vjs-icon-video-perm').click();
+                    me.show_cues();
+                }, false);
+                
+            }
+            
+                
         },
         get_location(page){
             let me = this;
@@ -176,7 +140,6 @@ export default {
                 window.markers = [];
                 window.circles = [];
                 // JS API is loaded and available
-                console.log("Called")
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         page.position = position;
@@ -184,24 +147,25 @@ export default {
                         me.frappe.customApiCall(`api/method/one_fm.api.v1.face_recognition.get_site_location`,
                             {employee_id:me.employee_data.employee_id, latitude:position.coords.latitude,
                             longitude:position.coords.longitude}, 'POST').then(res=>{
+                                console.log(res)
                                 if(res.status_code==200){
-                                    // console.log(position.coords, res)
                                     if (res.data.user_within_geofence_radius){
-                                        me.shift = res.data;
-                                        console.log(res.data)
+                                        me.res = res;
+                                        me.shift = res.data.shift;
                                         // show buttons
                                         $('#button-controls').show();
                                         // add shift assignment to screen
                                         // console.log(res)
                                         document.querySelector('#__site_name__').innerHTML = `
-                                            <h5><b>Site: <i class="text-success"></b> ${me.shift.shift.site}</i></h5>
-                                            <h6><b>Site: <i class="text-success"></b> ${me.shift.shift.shift}</i></h6>
-                                            <h5><b>Start: </b> <i class="text-success">${me.shift.shift.start_datetime}</i></h5>
-                                            <h5><b>End: </b> <i class="text-danger">${me.shift.shift.end_datetime}</i></h5>
+                                            <h5><b>Site: </b> ${me.shift.site}</h5>
+                                            <h6><b>Site: </b> ${me.shift.shift}</h6>
+                                            <h5><b>Start: </b> <i class="text-success">${me.shift.start_datetime}</i></h5>
+                                            <h5><b>End: </b> <i class="text-danger">${me.shift.end_datetime}</i></h5>
                                         `
                                         // show map
-                                        me.load_gmap(me.shift);
+                                        me.load_gmap(res.data);
                                         $('#sync-location').hide();
+                                        me.ready_checkin(res);
                                     } else {
                                         me.notify.error('Oops', 'You are outside the site location. Please try again')
                                     }
@@ -240,6 +204,15 @@ export default {
             } else { 
                 me.notify.error('Geolocation',"Geolocation is not supported by this browser.");
             }
+        },
+        process_video(videoBlob){
+            let me = this;
+            if (me.page.enrolled){
+                me.upload_file(videoBlob, "verify", me.res.data.log_type, 0)
+            } else {
+                me.upload_file(videoBlob, "enroll", me.res.data.log_type, 0)
+            }
+            
         },
         load_gmap(position){
             let me = this;
@@ -393,23 +366,22 @@ export default {
             })
         },
         upload_file(file, method, log_type, skip_attendance){
+            $('#cover-spin').show();
             let me = this;
-            me.stop_stream();
-            localStream.getVideoTracks()[0].stop();
             let method_map = {
-                'enroll': me.frappe.url+'/api/method/one_fm.api.v3.web.enroll',
-                'verify': me.frappe.url+'/api/method/one_fm.api.v3.web.verify'
+                'enroll': me.frappe.url+'/api/method/one_fm.api.v1.web.enroll',
+                'verify': me.frappe.url+'/api/method/one_fm.api.v1.web.verify'
             }
-
             return new Promise((resolve, reject) => {
                 let xhr = new XMLHttpRequest();
                 xhr.open("POST", method_map[method], true);
                 xhr.setRequestHeader("Accept", "application/json");
                 xhr.setRequestHeader("X-Frappe-CSRF-Token", me.csrf_token);
-                xhr.setRequestHeader("Authorization", "token "+JSON.parse(localStorage.frappeUser).token);
+                xhr.setRequestHeader("Authorization", JSON.parse(localStorage.frappeUser).token);
 
                 let form_data = new FormData();
                 form_data.append("file", file, me.employee_data.user_id+".mp4");
+                form_data.append("employee_id", me.employee_data.employee_id);
                 if(method == 'verify'){
                     // let {timestamp} = cur_page.page.page.position;
                     let {latitude, longitude} = me.page.position.coords;
@@ -418,39 +390,47 @@ export default {
                     // form_data.append("timestamp", timestamp);
                     form_data.append("log_type", log_type);
                     form_data.append("skip_attendance", skip_attendance);
+                } else {
+                    
                 }
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState == XMLHttpRequest.DONE) {
                         $('#cover-spin').hide();
-                        if (xhr.status === 200) {
-                            let r = null;
-                            try {
-                                r = JSON.parse(xhr.responseText);
-                                if(r.message.error){
-                                    me.notify.error("warning", r.message.message);
-                                } else {
-                                    me.notify.success("success", r.message.message);
-                                }
-                                document.querySelector('#page-wrap-content').innerHTML = ``;
-                                me.initialize()
-                                //me.$router.push('/checkin');
-                            } catch (e) {
-                                r = xhr.responseText;
-                            }
-                        } else if (xhr.status === 403) {
-                            let response = JSON.parse(xhr.responseText);
-                            console.log(JSON.parse(xhr.responseText))
-                            localStream.getVideoTracks()[0].stop();
-                            me.notify.error("Not permitted", response._error_message)
-                        } else {
-                            let error = null;
-                            try {
-                            error = JSON.parse(xhr.responseText);
-                            } catch (e) {
-                            // pass
-                            }
-                            localStream.getVideoTracks()[0].stop();
+                        if ([200, 201].includes(xhr.status)) {
+                        let r = null;
+                        try {
+                            r = JSON.parse(xhr.responseText);
+                            console.log(r);
+                            me.notify.success("Successful", r.data);
+                            // if(method=="verify"){}
+                            $('.verification').hide();  
+                            // me.initialize()
+                            me.$router.push('/checkin');
+                            setTimeout(()=>{
+                               window.location.href='/checkin' 
+                            }, 10000)
+                        } catch (e) {
+                            r = xhr.responseText;
                         }
+                    } else if (xhr.status === 403) {
+                        $('#cover-spin').hide();
+                        let response = JSON.parse(xhr.responseText);
+                        me.notify.error("Not permitted", response._error_message)
+                    } else if (xhr.status === 500) {
+                        $('#cover-spin').hide();
+                        console.log(xhr)
+                        let response = JSON.parse(xhr.responseText);
+                        me.notify.error("Error", response._error_message)
+                    } else {
+                        $('#cover-spin').hide();
+                        let error = null;
+                        try {
+                            error = JSON.parse(xhr.responseText);
+                            console.log(error)
+                        } catch (e) {
+                        // pass
+                        }
+                    }
                     }
                 };
                 xhr.send(form_data);
@@ -524,84 +504,6 @@ export default {
                 console.log(res)
             })
             me.notify.error("Please inform your in-line supervisor in person or via direct call about the issue and confirm attendance/exit.")
-        },
-        set_page_content(){
-            document.querySelector('#page-wrap-content').innerHTML = `
-            <div class="page-wrap">
-                <div id="cover-spin"></div>
-
-                <div class="col-md-3 col-xs-12" id="profile-card">
-                    <div id="sync-location">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <button class="btn btn-sm btn-primary btn-start" id="locationButton">
-                                    Get Location
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="button-controls">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <button class="btn btn-sm btn-primary btn-start" id="enrollButton">
-                                    Start Enrollment
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row start">
-                            <div class="col-xs-12">
-                                <button class="btn btn-sm btn-success btn-start" id="startButton">
-                                    Check In
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row end">
-                            <div class="col-xs-12">
-                                <button class="btn btn-sm btn-danger btn-start" id="endButton">
-                                    Check Out
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <button class="btn btn-sm btn-warning btn-start" id="hourlyButton">
-                                    Hourly Check In
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <button class="btn btn-sm btn-primary btn-start" id="errorButton">
-                                    Not Working? Click here.
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-9 col-xs-12 enrollment" style="display:none">
-                    <div style="text-align:center">
-                        <div id="cues"></div>
-                        <video id="enroll_preview" playsinline autoplay muted text-center></video>
-                        <button class="btn btn-sm btn-primary btn-start" id="enroll">
-                            Enroll
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-9 col-xs-12 verification" style="display:none">
-                    <div style="text-align:center">
-                        <div id="countdown"></div>
-                        <video id="preview" playsinline autoplay muted text-center></video>
-                    </div>
-                </div>
-                <div class="col-md-9 col-xs-12">
-                    <div id="map" style="height:300px"></div>
-                </div>
-            </div>
-            `
-        },
-        stop_stream(){
-            let me = this;
-            localStream.getVideoTracks()[0].stop();
         }
         // end
     }
@@ -620,7 +522,73 @@ export default {
         <div class="section mt-2">
             <div class="card">
                 <div class="card-body" id="page-wrap-content">
-                    
+                    <div class="page-wrap">
+                        <div id="cover-spin"></div>
+
+                        <div class="col-md-3 col-xs-12" id="profile-card">
+                            <div id="sync-location">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <button class="btn btn-sm btn-primary btn-start" id="locationButton">
+                                            Get Location
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="button-controls">
+                                <div class="row"  id="enrollSection">
+                                    <div class="col-xs-12 alert alert-danger">
+                                        Please remove your spectacles. Follow the instructions here after clicking Enroll button.
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <button class="btn btn-sm btn-start" id="enrollButton"
+                                            style="background-color: green;">
+                                            Start Enrollment
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row start">
+                                    <div class="col-xs-12">
+                                        <button class="btn btn-sm btn-success btn-start" id="startButton">
+                                            Check In
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row end">
+                                    <div class="col-xs-12">
+                                        <button class="btn btn-sm btn-danger btn-start" id="endButton">
+                                            Check Out
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <button class="btn btn-sm btn-warning btn-start" id="hourlyButton">
+                                            Hourly Check In
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <button class="btn btn-sm btn-primary btn-start" id="errorButton">
+                                            Not Working? Click here.
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9 col-xs-12 verification" style="display:none">
+                            <div style="text-align:center">
+                                <div id="countdown"></div>
+                                <div id="cues"></div>
+                                <VideoJSRecord @get-video="process_video" :recordTimer="recordTimer"
+                                v-if="recordTimer>0"/>
+                            </div>
+                        </div>
+                        <div class="col-md-9 col-xs-12">
+                            <div id="map" style="height:300px"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -639,6 +607,10 @@ export default {
 <style>
 /*--------------------------------------------------*/
 /*---------------------SPINNER----------------------*/
+#myVideo {
+  background-color: #95DDF5;
+}
+
 #cover-spin {
   position: fixed;
   width: 100%;

@@ -89,29 +89,20 @@ export default {
       });
     },
     addToPenaltyTable() {
-      if (this.selectedOption) {
-        // Ensure penaltyTable is initialized as an array before pushing
-        if (!Array.isArray(this.penaltyTable)) {
-          this.penaltyTable = [];
-        }
-
-        // Push the selected option to the penaltyTable array
+      if (this.selectedOption && this.selectedOption.name) {
         this.penaltyTable.push({
-          sn: this.penaltyTable.length + 1, // Incremental Serial Number
+          sn: this.penaltyTable.length + 1, 
           name: this.selectedOption.name,
         });
-
-        // Optionally, you can reset the selectedOption for the next selection
-        this.selectedOption = null;
       }
     },
     addToEmployeeTable() {
-      if (this.selectedEmployeeOption) {
+      console.log(this.selectedEmployeeOption)
+      if (this.selectedEmployeeOption && this.selectedEmployeeOption.employee_name) {
         this.employeeTable.push({
           sn: this.employeeTable.length + 1,
           name: this.selectedEmployeeOption.employee_name,
           employee_id: this.selectedEmployeeOption.name,
-          
         });
       }
     },
@@ -149,7 +140,6 @@ export default {
       const otherDamages = document.getElementById('otherDamages').checked;
       const assetDamages = document.getElementById('assetDamages').checked;
 
-      console.log(this.selectedShift)
 
       if (this.selectedPenaltyCategory === 'performance') {
         selectedShiftDetails = this.selectedShift;
@@ -200,20 +190,18 @@ export default {
     <div class="section mt-4">
     <br>
     <br>
-    <br>
-    <h1 style="color: white;">Penalty Issuance </h1>
-      <div class="grey-card">
-        <div class="card rounded p-2 bg-light">
-          <p class="mb-1">Issuing Time: &nbsp; &nbsp;{{ currentDateTime }}</p>
-          <p v-if="userCoordinates" class="mb-0">Location: &nbsp; &nbsp;{{ userCoordinates.latitude }}, {{ userCoordinates.longitude }}</p>
-        </div>
+    <h1 style="color: white; font-size: 20px; line-height: 28px;">Penalty Issuance </h1>
+      <div class="grey-card" >
+          <p class="mb-1">Issuing Time: <br>{{ currentDateTime }}</p>
+          <br>
+          <p v-if="userCoordinates" class="mb-0">Location: <br>{{ userCoordinates.latitude }}, {{ userCoordinates.longitude }}</p>
       </div>
     
     <form @submit.prevent="submitPenaltyIssuance">
 
-      <div class="mb-3">
+      <div class="mb-3" style="color: white;">
           <label for="penaltyCategory" class="form-label">Penalty Category</label>
-          <select id="penaltyCategory" class="form-select" required v-model="selectedPenaltyCategory" style="background-color: white;">
+          <select id="penaltyCategory" class="form-select" required v-model="selectedPenaltyCategory" style="background-color:#7A7A7A; color: white;"> 
               <option value="" disabled>Select Penalty Category</option>
               <option value="accommodation">Accommodation</option>
               <option value="performance">Performance</option>
@@ -222,7 +210,7 @@ export default {
       </div>
 
       <div v-if="selectedPenaltyCategory === 'performance'">
-        <div class="mb-3">
+        <div class="mb-3" >
           <label for="shift" class="form-label">Shift</label>
           <select id="shift" class="form-select" required v-model="selectedShift" style="background-color: white;">
             <option value="" disabled>Select Shift</option>
@@ -241,15 +229,15 @@ export default {
 
       <div class="mb-3">
         <label for="penaltyOccurrenceTime" class="form-label">Penalty Occurrence Time</label>
-        <input type="text" id="penaltyOccurrenceTime" class="form-control" placeholder="Select date and time" required >
+        <input type="datetime-local" id="penaltyOccurrenceTime" class="form-control" placeholder="Select date and time" required >
       </div>
 
 
-      <div class="card mb-3" style="background-color: #ccc;">
+      <div class="card mb-3" style="background-color: #616161;">
         <div class="card-body">
           <label class="form-label">Employee Selection</label>
           <div class="mb-3">
-            <select v-model="selectedEmployeeOption" style="background-color: white;" class="form-select">
+            <select v-model="selectedEmployeeOption"  class="form-select">
               <option :value="option" v-for="option in employeeDropdownOptions" :key="option.value">{{ option.employee_name }} ({{ option.name }})</option>
             </select>
             <br>
@@ -258,7 +246,7 @@ export default {
           </div>
           <!-- Employee Table -->
           <label class="form-label">Employee Table</label>
-          <table class="table">
+          <table class="table" >
             <thead>
               <tr>
                 <th>S/N</th>
@@ -280,10 +268,10 @@ export default {
       </div>
 
       
-      <div class="card mb-3"  style="background-color: #ccc;">
+      <div class="card mb-3"  style="background-color: #616161;">
         <div class="card-body">
           <label for="selectOption" class="form-label">Penalty Issuance Details</label>
-          <select id="selectOption" style="background-color: white;" class="form-select" v-model="selectedOption">
+          <select id="selectOption"  class="form-select" v-model="selectedOption">
             <option :value="option" v-for="option in dropdownOptions" :key="option.value">{{ option.name }}</option>
           </select>
           <br>
@@ -311,14 +299,15 @@ export default {
       </div>
 
 
-      <div class="grey-card">
-        <div class="card rounded p-2 bg-light">
-          <h2>Penalty Issuer Details</h2>
-          <p class="mb-1">Employee:  &nbsp; &nbsp; {{ employee_data.name }}</p>
-          <p class="mb-1">Employee Name: &nbsp; &nbsp; {{ employee_data.employee_name }}</p>
-          <p class="mb-1">Designation: &nbsp; &nbsp; {{ employee_data.designation }}</p>
+        <!-- <div class="card rounded p-2 bg-light" style="background-color: #616161;"> -->
+        <div class="issuer-card">
+          <div class="inner-issuer-card">
+            <h2 style="color: white;">Penalty Issuer Details</h2><br>
+            <p class="mb-1" style="color:#c1c1c1">Employee: </p>  <p class="emp-data">{{ employee_data.name }}</p>
+            <p class="mb-1" style="color:#c1c1c1">Employee Name:</p> <p class="emp-data">{{ employee_data.employee_name }}</p>
+            <p class="mb-1" style="color:#c1c1c1">Designation:</p>  <p class="emp-data">{{ employee_data.designation }}</p>
+          </div>
         </div>
-      </div>
 
 
            
@@ -326,44 +315,44 @@ export default {
           <label class="form-label">Additional Damages</label>
 
           <!-- Customer Property Damage Card -->
-          <div class="card mb-2">
+          <!-- <div class="card mb-2"> -->
             <div class="card-body">
               <div class="form-check">
                 <input type="checkbox" id="customerPropertyDamage" class="form-check-input">
                 <label for="customerPropertyDamage" class="form-check-label">Customer Property Damage</label>
-              </div>
+              <!-- </div> -->
             </div>
           </div>
 
           <!-- Company Damage Card -->
-          <div class="card mb-2">
+          <!-- <div class="card mb-2"> -->
             <div class="card-body">
               <div class="form-check">
                 <input type="checkbox" id="companyDamage" class="form-check-input">
                 <label for="companyDamage" class="form-check-label">Company Damage</label>
               </div>
-            </div>
+            <!-- </div> -->
           </div>
 
           <!-- Other Damages Card -->
-          <div class="card mb-2">
+          <!-- <div class="card mb-2"> -->
             <div class="card-body">
               <div class="form-check">
                 <input type="checkbox" id="otherDamages" class="form-check-input">
                 <label for="otherDamages" class="form-check-label">Other Damages</label>
               </div>
-            </div>
+            <!-- </div> -->
           </div>
 
           <!-- Asset Damages Card -->
-          <div class="card mb-2">
+          <!-- <div class="card mb-2"> -->
             <div class="card-body">
               <div class="form-check">
                 <input type="checkbox" id="assetDamages" class="form-check-input">
                 <label for="assetDamages" class="form-check-label">Asset Damages</label>
               </div>
             </div>
-          </div>
+          <!-- </div> -->
 
       </div>
            
@@ -374,18 +363,15 @@ export default {
       </div>
 
 
-      <button type="submit" class="btn btn-primary">Issue Penalty</button>
+      <button type="submit" class="issue-penalty">Issue Penalty</button>
 
     </form>
   </div>
     
 
 
-
-
-
     <!-- Footer Start -->
-    <!-- <Footer /> -->
+    <Footer />
     <!-- Footer End -->
 
 </template>
@@ -393,11 +379,26 @@ export default {
 
 <style scoped>
 
+
 .grey-card {
-    background-color: #3a3333; 
+    background-color: #616161; 
+    color: white;
     border-radius: 10px; 
     padding: 15px; 
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
+    width: Fixed (398px);
+    height: Hug (136px);
+    top: 109px;
+    left: 13px;
+    padding: 16px, 10px, 16px, 10px;
+    /* border-radius: 9px */
+    gap: 16px;
+
+  }
+
+  .form-select, .form-control{
+    background-color: #7A7A7A;
+    color: white;
   }
 
   #fileUpload {
@@ -414,5 +415,59 @@ export default {
   .card-body {
     padding: 10px; 
   }
+
+  /* .mb-1{
+    color: #616161;
+  } */
+
+  .mb-3{
+    color: white;
+    margin-top: 10px;
+  }
+
+  .table, th{
+    color:white;
+  }
+
+  thead{
+    color: white;
+  }
+
+  .emp-data{
+    color:white;
+  }
+
+  .issuer-card{
+    margin-bottom: 20px;
+    width: Fixed (398px);
+    height: Hug (240px);
+    top: 1191px;
+    left: 13px;
+    padding: 16px, 10px, 16px, 10px;
+    border-radius: 9px;
+    gap: 16px;
+    background-color: #616161;
+  }
+
+  .inner-issuer-card{
+    padding:15px;
+  }
+
+  .issue-penalty {
+    width: 450px; 
+    height: 48px; 
+    padding: 15px 20px;
+    border-radius: 8px;
+    background: #E4751C;
+    color: white;
+    display: block; 
+    margin: 0 auto 70px auto; 
+    cursor: pointer;
+}
+
+.form-check-label{
+  color:white;
+}
+
 
 </style>

@@ -8,6 +8,10 @@ import ForgotPassword from '@/views/ForgotPassword.vue'
 import PenaltyManagement from '@/views/legal/penalty/PenaltyManagement.vue'
 import PenaltyIssuance from "@/views/legal/penalty/PenaltyIssuance.vue"
 import PenaltyDetail from "@/views/legal/penalty/PenaltyDetail.vue"
+import ApplyLeaveApplication from '@/views/Leave_Application/Create.vue'
+import ViewLeaveApplication from '@/views/Leave_Application/View.vue'
+import LeaveApplicationDetails from '@/views/Leave_Application/Detail.vue'
+
 
 
 const router = createRouter({
@@ -22,6 +26,9 @@ const router = createRouter({
     { path: '/penalty-management', name: 'penalty_management', component: PenaltyManagement},
     { path: "/penalty-management/issuance/", name: "penalty_issuance", component: PenaltyIssuance},
     { path: '/penalty-detail/:penaltyName', name: 'penalty_detail', component: PenaltyDetail, props: true },
+    { path: '/leave_application/create', name: 'apply_leave_application', component: ApplyLeaveApplication},
+    { path: '/leave_application/view', name: 'view_leave_application', component: ViewLeaveApplication},
+    { path: '/leave_application/:leave_id', name: 'leave_application_details', component: LeaveApplicationDetails},
     { path: '/about', name: 'about', component: () => import('../views/AboutView.vue')}
   ]
 })

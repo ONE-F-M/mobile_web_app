@@ -14,41 +14,31 @@ export default {
             };
         }
         async login(body){
-            
-            let res = await fetch(`${this.url}/api/method/one_fm.api.v2.authentication.login`, {
+            let res = await fetch(`${this.url}/api/method/one_fm.api.v2.authentication.user_login`, {
                 method: 'POST',
                 headers: this.headers,
                 body: JSON.stringify(body)
             })
-            let auth = await res.json()
-            if(auth.status_code==200){
-                // start authenticate via email
-                let email_login = await fetch(`${this.url}/api/method/one_fm.api.v2.authentication.email_login`, {
-                    method: 'POST',
-                    headers: this.headers,
-                    body: JSON.stringify({
-                        usr:auth.data.user_id,
-                        pwd:body.password
-                    })
-                })
-                email_login = await email_login.json()
-                // end authenticate via email
-                this.token = email_login.data.token;
-                this.headers.Authorization = "token " +email_login.data.token;
+            if(res.status==200){
+                let auth = await res.json()
+                // // end authenticate via email
+                this.token = auth.data.token;
+                this.headers.Authorization = this.token;
                 
-                // set storage
+                // // set storage
                 localStorage.setItem('frappeUser', JSON.stringify(
-                    {token: this.token, employee_data: auth.data, url: this.url}))
-                return await {status_code: auth.status_code, message:auth.message, data:auth.data}
+                    {token: this.token, employee_data: auth.data, url: this.url})
+                )
+                return {status: res.status, message:res.message, data:auth.data}
             } else {
-                // alert(auth.message)
-                return await {status_code: auth.status_code, message:auth.error}
+                let auth = await res.json()
+                return {status: res.status, message:auth.error}
             }
         }
         // get updated headers
         getHeader(){
             let token = JSON.parse(localStorage.frappeUser).token;
-            this.headers.Authorization = `Token ${token}`
+            this.headers.Authorization = token
             // return this.headers;
         }
 
@@ -175,10 +165,22 @@ export default {
                     args['body'] = JSON.stringify(body);
                 }
                 let res = await fetch(`${this.url}/${api}`, args)
-                return await res.json();
+                
+                if(res.status==401){
+                    // Unauthorized Request or expired Token
+                    this.handle401();
+                } else {
+                    return await res.json();
+                }
+                
             } catch (e) {
-                console.log(e)
+                console.log(e, 'blablabla')
             }
+        }
+        // In the case token expires, redirect to home
+        handle401(){
+            localStorage.clear()
+            location.href= '/';
         }
     },
     Notify: class Notifiy {

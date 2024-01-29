@@ -1,6 +1,7 @@
 <script type="module">
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
+import VideoJSRecord from '@/components/VideoJSRecord.vue'
 
 export default {
   name: 'PenaltyDetail',
@@ -10,7 +11,8 @@ export default {
           employee_data: {},
           penalty_details: {},
           currentRejectedItem: {},
-          rejectionMessage: ""
+          rejectionMessage: "",
+          recordTimer: 5,
 
       };
     },
@@ -22,7 +24,8 @@ export default {
   },
   components: {
     Header,
-    Footer
+    Footer,
+    VideoJSRecord
   },
   computed: {
     showActionButtons() {
@@ -99,6 +102,15 @@ export default {
     // Once recording is complete or if there is an error, close the modal
     $('#recordingModal').modal('hide');
   },
+  process_video(videoBlob){
+        let me = this;
+        if (me.page.enrolled){
+            me.upload_file(videoBlob, "verify", me.res.data.log_type, 0)
+        } else {
+            me.upload_file(videoBlob, "enroll", me.res.data.log_type, 0)
+        }
+            
+  },
   }
 }
 </script>
@@ -116,31 +128,33 @@ export default {
         <h2 class="penalty-heading">{{ penalty_details.name }}</h2>
         <div class="penalty-details">
           <div class="penalty-field">
-            <strong class="label">Issuer Name:</strong> {{ penalty_details.issuer_name }}
+            <strong class="label">Issuer Name:</strong> <p>{{ penalty_details.issuer_name }}</p>
           </div>
           <div class="penalty-field">
-            <strong class="label">Recipient Name:</strong> {{ penalty_details.recipient_name }}
+            <strong class="label">Recipient Name:</strong> <p>{{ penalty_details.recipient_name }}</p>
           </div>
           <div class="penalty-field">
-            <strong class="label">Penalty Issuance Time:</strong> {{ penalty_details.penalty_issuance_time }}
+            <strong class="label">Penalty Issuance Time:</strong> <p>{{ penalty_details.penalty_issuance_time }}</p>
           </div>
           <div class="penalty-field">
-            <strong class="label">Penalty Occurrence Time:</strong> {{ penalty_details.penalty_occurrence_time }}
+            <strong class="label">Penalty Occurrence Time:</strong> <p>{{ penalty_details.penalty_occurrence_time }}</p>
           </div>
           <div class="penalty-field">
-            <strong class="label">Workflow State:</strong> {{ penalty_details.workflow_state }}
+            <strong class="label">Workflow State:</strong> <p>{{ penalty_details.workflow_state }}</p>
           </div>
   
           <!-- Additional fields based on availability -->
           <div v-if="penalty_details.shift" class="penalty-field">
-            <strong class="label">Shift:</strong> {{ penalty_details.shift }}
+            <strong class="label">Shift:</strong> <p>{{ penalty_details.shift }}</p>
           </div>
           <div v-if="penalty_details.site" class="penalty-field">
-            <strong class="label">Site:</strong> {{ penalty_details.site }}
+            <strong class="label">Site:</strong> <p>{{ penalty_details.site }}</p>
           </div>
           <div v-if="penalty_details.location" class="penalty-field">
-            <strong class="label">Location:</strong> {{ penalty_details.location }}
+            <strong class="label">Location:</strong> <p>{{ penalty_details.location }}</p>
           </div>
+          <br>
+          <br>
   
           <!-- Accept and Reject buttons -->
           <div v-if="showActionButtons" class="action-buttons">
@@ -181,17 +195,26 @@ export default {
         <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title" id="recordingModalLabel">Video Recording</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <div class="modal-body">
+        <!-- <div class="modal-body"> -->
             <!-- You can customize the modal body based on your video recording requirements -->
-            <p>Video recording is in progress...</p>
+            <!-- <p>Video recording is in progress...</p> -->
             <!-- Add any necessary video recording UI elements here -->
+        <!-- </div> -->
+
+        <div class="col-md-9 col-xs-12 verification" >
+                <div style="text-align:center">
+                    <div id="countdown"></div>
+                    <div id="cues"></div>
+                    <VideoJSRecord @get-video="process_video" :recordTimer="recordTimer"
+                    v-if="recordTimer>0"/>
+                </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
         </div>
     </div>
@@ -204,27 +227,29 @@ export default {
   
 <style scoped>
   .center-container {
-    display: flex;
+    margin-top:50px;
+    padding:10px;
+    /* display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh; /* Full height of the viewport */
+    height: 100vh; */
   }
   
   .penalty-details-container {
-    background-color: #333333; /* Dark grey background */
+    /* background-color: #333333;  */
     padding: 20px;
     border-radius: 10px;
     color: white; /* Text color */
   }
   
   .penalty-heading {
-    color: #8B4513; /* Light brown color for the heading */
+    color: #E28A38;
     margin-bottom: 15px;
   }
   
   .penalty-details {
     width: 100%;
-    max-width: 400px; /* Adjust as needed */
+    max-width: 400px; 
   }
   
   .penalty-field {
@@ -232,7 +257,8 @@ export default {
   }
   
   .label {
-    color: #B0C4DE; /* Light grey color for labels */
+    color: #C1C1C1;
+ 
   }
   
   .action-buttons {
@@ -240,24 +266,47 @@ export default {
   }
   
   .accept-button {
-  background-color: #4CAF50; /* Green background */
+  background-color: #1E941E; 
   color: white; /* White text */
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-right: 10px;
-  float:left
+  float:left;
+  width:190px;
 }
 
 .reject-button {
-  background-color: #FF6347; /* Red background */
+  background-color: #EF4141;
   color: white; /* White text */
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 190px;
   float: right;
 }
+
+p{
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0em;
+  text-align: left;
+
+}
+
+/* #rejectionModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dialog {
+  border-radius: 10px; /* Set the desired border-radius value */
+
+
 </style>
   

@@ -50,7 +50,11 @@ export default {
       changeTab(tab) {
           this.currentTab = tab;
           this.getPenalties();
-      }
+      },
+      formatDate(dateTimeString) {
+        const dateOnly = dateTimeString.split(' ')[0];
+        return dateOnly;
+    },
     }
 }
 </script>
@@ -112,7 +116,7 @@ export default {
                       </div>
 
                       <div class="penalty-time">
-                        {{ item.penalty_issuance_time }}
+                        {{ formatDate(item.penalty_issuance_time) }}
                       </div>
 
                       <div v-if="currentTab === 'issuer'">
@@ -140,7 +144,7 @@ export default {
 
 
             <router-link to="/penalty-management/issuance/" class="add-penalty-button bottom-right">
-                <ion-icon name="add-circle" style="color: #8B4513; font-size: 8em;"></ion-icon>
+                <ion-icon name="add-circle" style="color: #e4751c; font-size: 5em;"></ion-icon>
             </router-link>
 
 
@@ -156,6 +160,14 @@ export default {
 
 <style scoped>
 
+.left{
+  color: #000;
+  text-align: center;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 140%;
+  }
 
 .tabs {
   display: flex;
@@ -167,12 +179,14 @@ export default {
   padding: 10px;
   background-color: white;
   border: 1px solid #ccc;
+  border-radius: 2px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .tabs button.active-tab {
-  background-color: #50474a; /* Light brown when active */
+  background-color: #4D4D4D
+; /* Light brown when active */
 }
 
 .tab-content {
@@ -183,44 +197,58 @@ export default {
 
 
 
-  .bottom-right {
-        position: fixed;
-        bottom: 100px;
-        right: 20px;
-    }
+.bottom-right {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+  }
 
-    .penalty-item {
-        border-top: 1px solid #574141;
-        border-bottom:  1px solid #574141;
-        padding: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+.penalty-item {
+    border-top: 1px solid #5B5B5B;
+    border-bottom:  1px solid #5B5B5B;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: whitesmoke;
+    
+}
 
-    .penalty-details {
-        /* display: flex;
-        flex-direction: column;
-        width: 80%; Adjust as needed */
-        display:grid;
-        grid-template-columns:0.5fr 1.5fr;
-    }
+.penalty-details {
+    /* display: flex;
+    flex-direction: column;
+    width: 80%; Adjust as needed */
+    color: white; 
+    line-height: 200%;
+    display:grid;
+    grid-template-columns:0.5fr 1.5fr;
+    color: #FFF;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 240%; 
+}
 
-    .penalty-name {
-        font-weight: bold;
-    }
-
-    /* .workflow-state {
-        display: flex;
-        align-items: center;
-    } */
+.penalty-name {
+    font-weight: bold;
+}
 
 
-      .workflow-state ion-icon {
-          margin-right: 1px;
-          font-size: 3em; 
-          margin-left: auto; 
-      }
+.workflow-state ion-icon {
+    margin-right: 1px;
+    font-size: 3em; 
+    margin-left: auto; 
+}
+
+
+.add-penalty-button {
+  width: 48px;
+  height: 48px;
+  top: 795px;
+  left: 362px;
+  border-radius: 48px;
+  gap: 8px;
+}
 
 </style>
 
