@@ -189,8 +189,7 @@ export default {
                         <li>
                             <a href="/checkin" class="item">
                                 <div class="icon-box ">
-                                    <ion-icon name="checkmark-done-circle-outline"></ion-icon>
-                                </div>
+                                    <ion-icon name="reader-outline"></ion-icon>                                </div>
                                 
                                 <div class="in">
                                     Mark Attendance
@@ -229,8 +228,7 @@ export default {
                             <div class="dropdown" style="width: 100vw;font-size: medium;">
                                     <a class="item" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <div class="icon-box ">
-                                            <ion-icon name="medkit-outline"></ion-icon>
-                                        </div>
+                                            <ion-icon name="newspaper-outline"></ion-icon>                                        </div>
                                         <div class="in">
                                             Shift Permission
                                         </div>
