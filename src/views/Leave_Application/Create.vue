@@ -137,8 +137,8 @@ export default {
     <div id="appCapsule">
       <div class="section mt-2">
           <div style="display:flex;padding-bottom: 5px;">
-            <h5 style="color:white"> Leave Type: </h5>
-            <select v-model="selected" name="leavetype" @change="onLeaveTypeChange($event)" style="margin-left: auto;">
+            <h5 style="color:white; align-self: center;"> Leave Type: </h5>
+            <select v-model="selected" class="custom_input" style=" " name="leavetype" @change="onLeaveTypeChange($event)">
               <option disabled value="">Select Leave Type.</option>
               <option v-for="option in leaveTypeOptions" :value="option.value">
                 {{ option.text }}
@@ -165,22 +165,22 @@ export default {
           </div>
           <div v-if="this.leave_type === 'Sick Leave'">
             <h5 style="color:#B87852;"> Proof Document:</h5>
-            <input id="upload-file" class="upload-file" type="file"  @change="fetchFile($event)"/>
+            <input  class="upload-file" type="file"  @change="fetchFile($event)"/>
           </div>
           <div>
             <h5 style="color:white;"> From Date:</h5>
-              <input type="date" id="fromDate" style="width:90vw;" pattern="\d{4}-\d{2}-\d{2}" @change="onChange($event, 'from')" />
+              <input class="custom_input" type="date" id="fromDate" style="width:90vw;" pattern="\d{4}-\d{2}-\d{2}" @change="onChange($event, 'from')" />
           </div>
           <div >
             <h5 style="color:white;"> To Date:</h5>
-            <input type="date" id="toDate" style="width:90vw;" pattern="\d{4}-\d{2}-\d{2}" @change="onChange($event, 'to')"/>
+            <input class="custom_input" type="date" id="toDate" style="width:90vw;" pattern="\d{4}-\d{2}-\d{2}" @change="onChange($event, 'to')"/>
           </div>
           <div class="form_card" style="display:flex; color:white;">
             <h5  style="color:white;"> Total Leave Days</h5> <h5 style="margin-left: auto;color:white">{{this.total_leave_days}}</h5> 
           </div>
           <div >
             <h5 style="color:white;"> Reason:</h5>
-            <textarea id="reason" v-model="reason" name="reason" rows="5" cols="40">
+            <textarea id="reason" class="custom_input" v-model="reason" name="reason" rows="5" cols="45">
             </textarea>
           </div>
           <button v-on:click="submit" style="background-color: #B87852;border-radius: 10px;padding: 10px; width: 95vw;"> Sumbit </button>
@@ -200,3 +200,22 @@ export default {
   <!-- Footer End -->
 
 </template>
+
+<style>
+  .custom_input{
+    line-height: 30px;
+    padding: 2px;
+    margin: 2px;  
+    border: 2px solid #595c63;
+    color: #595c63;
+    background-color: white;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -moz-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+    margin-left: auto;
+  }
+  
+</style>
