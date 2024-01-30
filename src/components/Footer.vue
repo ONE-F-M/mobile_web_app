@@ -189,8 +189,7 @@ export default {
                         <li>
                             <a href="/checkin" class="item">
                                 <div class="icon-box ">
-                                    <ion-icon name="checkmark-done-circle-outline"></ion-icon>
-                                </div>
+                                    <ion-icon name="reader-outline"></ion-icon>                                </div>
                                 
                                 <div class="in">
                                     Mark Attendance
@@ -211,9 +210,25 @@ export default {
                         <li>
                             <div class="dropdown" style="width: 100vw;font-size: medium;">
                                     <a class="item" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <div class="icon-box ">
+                                        <div class="icon-box">
                                             <ion-icon name="medkit-outline"></ion-icon>
                                         </div>
+                                        <div class="in">
+                                            Leave Application
+                                        </div>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="/leave_application/create">New Leave Application</a>
+                                        <a class="dropdown-item" href="/leave_application/view">Leave Applications</a>
+                                    </div>
+                                </div>
+                        
+                        </li>
+                        <li>
+                            <div class="dropdown" style="width: 100vw;font-size: medium;">
+                                    <a class="item" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <div class="icon-box ">
+                                            <ion-icon name="newspaper-outline"></ion-icon>                                        </div>
                                         <div class="in">
                                             Shift Permission
                                         </div>
