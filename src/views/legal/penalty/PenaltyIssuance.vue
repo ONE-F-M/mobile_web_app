@@ -18,7 +18,10 @@ export default {
           employeeDropdownOptions: [], 
           employeeTable: [],
           selectedOption: {},
-          selectedEmployeeOption: {}
+          selectedEmployeeOption: {},
+          dropdownOptions: [],
+          penaltyOccurrenceTime: '',
+
       };
     },
   mounted() {
@@ -51,10 +54,15 @@ export default {
   },
   watch: {
     selectedPenaltyCategory(newCategory) {
-      if (newCategory === 'performance') {
+      if (newCategory === 'Performance') {
         this.fetchShifts();
       }
     },
+    penaltyOccurrenceTime(newTime) {
+    if (this.selectedPenaltyCategory === 'Performance' && this.selectedShift) {
+      this.fetchShiftEmployee(this.selectedShift.name, newTime);
+    }
+  },
   },
   methods: {
     async getData() {
@@ -64,7 +72,7 @@ export default {
         if (res.status_code == 200) {
           this.employeeDropdownOptions = res.data
         } else {
-          this.notify.error("Error", "An error occurred while fetching the the subordinates, kindly contact aAmin")
+          this.notify.error("Error", "An error occurred while fetching the the subordinates, kindly contact Support")
         }
       })
     },
@@ -74,12 +82,23 @@ export default {
         if (res.status_code == 200){
           this.shifts = res.data
         } else {
-          this.notify.error("Error", "An error occurred while fetching categories, kindly contact Admin")
+          this.notify.error("Error", "An error occurred while fetching categories, kindly contact Support")
         }
       })
     },
+    fetchShiftEmployee(shift, penalty_occurrence_time) {
+      this.frappe.customApiCall("api/method/one_fm.api.v1.legal.get_shift_employee_list", {
+        shift: shift,
+        penalty_occurrence_time: penalty_occurrence_time,
+      }, "POST").then(res => {
+        if (res.status_code === 200) {
+          this.employeeDropdownOptions = res.data;
+        } else {
+          this.notify.error("Error", "Failed to fetch shift employees");
+        }
+      });
+    },
     fetchDropdownOptions() {
-      // Replace 'your_api_endpoint' with the actual API endpoint URL
       this.frappe.customApiCall("api/method/one_fm.api.v1.legal.get_penalty_types", {}, "GET").then(res => {
         if (res.status_code === 200) {
           this.dropdownOptions = res.data;
@@ -97,7 +116,6 @@ export default {
       }
     },
     addToEmployeeTable() {
-      console.log(this.selectedEmployeeOption)
       if (this.selectedEmployeeOption && this.selectedEmployeeOption.employee_name) {
         this.employeeTable.push({
           sn: this.employeeTable.length + 1,
@@ -131,17 +149,16 @@ export default {
     },
 
     submitPenaltyIssuance() {
-      console.log("to hell with you")
       const penaltyCategory = document.getElementById('penaltyCategory').value;
-      const issuingLocation = document.getElementById('issuingLocation').value;
+      const penaltyLocation = document.getElementById('penaltyLocation').value;
       const penaltyOccurrenceTime = document.getElementById('penaltyOccurrenceTime').value;
       const customerPropertyDamage = document.getElementById('customerPropertyDamage').checked;
       const companyDamage = document.getElementById('companyDamage').checked;
       const otherDamages = document.getElementById('otherDamages').checked;
       const assetDamages = document.getElementById('assetDamages').checked;
 
-
-      if (this.selectedPenaltyCategory === 'performance') {
+      let selectedShiftDetails = ""
+      if (this.selectedPenaltyCategory === 'Performance') {
         selectedShiftDetails = this.selectedShift;
       }
 
@@ -150,11 +167,10 @@ export default {
       const siteName = selectedShiftDetails ? selectedShiftDetails.site : null;
       const siteLocation = selectedShiftDetails ? selectedShiftDetails.site_location : null;
 
-      console.log(shiftName, projectName, siteLocation, siteName)
+      const employeeNames = this.employeeTable.map(employee => employee.employee_id);
+      const penaltyNames = this.penaltyTable.map(penalty => penalty.name);
 
-      const selectedEmployeeElements = document.querySelectorAll('#employeeSelection option:checked');
-      const selectedEmployeeIds = Array.from(selectedEmployeeElements).map(option => option.value);
-
+    
 
       const fileInput = document.getElementById('fileUpload');
       const files = fileInput.files;
@@ -170,10 +186,37 @@ export default {
               fileDataArray.push(fileData);
           }
       }
-    
 
+      this.frappe.customApiCall("api/method/one_fm.api.v1.legal.new_issue_penalty", {
+        penalty_category: penaltyCategory,
+        issuing_location: `${this.userCoordinates.latitude}, ${this.userCoordinates.longitude}`,
+        penalty_location: penaltyLocation,
+        penalty_occurrence_time: penaltyOccurrenceTime,
+        company_damage: companyDamage,
+        customer_property_damage: customerPropertyDamage,
+        asset_damage: assetDamages,
+        other_damages: otherDamages,
+        shift: shiftName,
+        site: siteName,
+        site_location: siteLocation,
+        project: projectName,
+        penalty_employees: employeeNames,
+        penalty_issuance_details: penaltyNames,
+        penalty_files: fileDataArray
 
-    
+      }, 'POST').then(res =>{
+        console.log(res)
+        if (res.status_code == 201){
+          this.notify.success("Success", "Bam! Penalty Issued. You're the Captain of Accountability!")
+          
+
+        }else{
+          this.notify.error("Error", "An error occurred during penalty issuance, please contact Support")
+        }
+        setTimeout(()=>{
+                        window.location.href='/penalty-management' 
+                        }, 5000)
+      })
     }
   }
 }
@@ -203,34 +246,33 @@ export default {
           <label for="penaltyCategory" class="form-label">Penalty Category</label>
           <select id="penaltyCategory" class="form-select" required v-model="selectedPenaltyCategory" style="background-color:#7A7A7A; color: white;"> 
               <option value="" disabled>Select Penalty Category</option>
-              <option value="accommodation">Accommodation</option>
-              <option value="performance">Performance</option>
-              <option value="transportation">Transportation</option>
+              <option value="Accomodation">Accommodation</option>
+              <option value="Performance">Performance</option>
+              <option value="Transportation">Transportation</option>
           </select>
       </div>
 
-      <div v-if="selectedPenaltyCategory === 'performance'">
-        <div class="mb-3" >
+      <div v-if="selectedPenaltyCategory === 'Performance'">
+        <div class="mb-3"  style="color: white;">
           <label for="shift" class="form-label">Shift</label>
-          <select id="shift" class="form-select" required v-model="selectedShift" style="background-color: white;">
+          <select id="shift" class="form-select" required v-model="selectedShift" style="background-color:#7A7A7A; color: white;">
             <option value="" disabled>Select Shift</option>
-            <option v-for="shift in shifts" :key="shift.name" :value="shift.name">{{ shift.name }}</option>
+            <option v-for="shift in shifts" :key="shift.name" :value="shift">{{ shift.name }}</option>
           </select>
         </div>
       </div>
 
-
-
       
       <div class="mb-3">
         <label for="issuingLocation" class="form-label">Penalty Location</label>
-        <input type="text" id="issuingLocation" class="form-control" placeholder="Place Where it happened " required>
+        <input type="text" id="penaltyLocation" class="form-control" placeholder="Place Where it happened " required>
       </div>
 
       <div class="mb-3">
         <label for="penaltyOccurrenceTime" class="form-label">Penalty Occurrence Time</label>
-        <input type="datetime-local" id="penaltyOccurrenceTime" class="form-control" placeholder="Select date and time" required >
+        <input type="datetime-local" id="penaltyOccurrenceTime" v-model="penaltyOccurrenceTime" class="form-control" placeholder="Select date and time" required>
       </div>
+
 
 
       <div class="card mb-3" style="background-color: #616161;">
@@ -420,10 +462,6 @@ export default {
     color: #616161;
   } */
 
-  .mb-3{
-    color: white;
-    margin-top: 10px;
-  }
 
   .table, th{
     color:white;

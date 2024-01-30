@@ -33,12 +33,10 @@ export default {
           if (this.currentTab === 'issuer') {
               role = 'Issuance';
           }
-          console.log(role)
           this.frappe.customApiCall("api/method/one_fm.api.v1.legal.get_penalties", {
               employee_id: this.employee_data.employee_id,
               role: role
           }, 'POST').then(res => {
-            console.log(res.data, role)
               if (res.status_code === 200) {
 
                   this.penalties = res.data;
@@ -98,15 +96,17 @@ export default {
                 <router-link :to="{ name: 'penalty_detail', params: { penaltyName: item.name } }">
                   <div class="penalty-details">
                     <div class="workflow-state">
-                      <!-- Icons based on workflow_state -->
+                  
                       <span v-if="item.workflow_state === 'Penalty Accepted'">
-                        <ion-icon name="checkmark-circle" style="color: #50474a;"></ion-icon>
+                        <img src="../../../assets/tick-circle.svg" alt="Accepted Penalty">
+
+                    
                       </span>
                       <span v-else-if="item.workflow_state === 'Penalty Issued'">
-                        <ion-icon name="hourglass" style="color: #50474a;"></ion-icon>
+                        <img src="../../../assets/timer.svg" alt="Accepted Penalty">
                       </span>
                       <span v-else>
-                        <ion-icon name="close-circle" style="color: #50474a;"></ion-icon>
+                        <img src="../../../assets/close-circle.svg" alt="Accepted Penalty">
                       </span>
                     </div>
 
@@ -143,9 +143,10 @@ export default {
 
 
 
-            <router-link to="/penalty-management/issuance/" class="add-penalty-button bottom-right">
-                <ion-icon name="add-circle" style="color: #e4751c; font-size: 5em;"></ion-icon>
-            </router-link>
+            
+        <router-link to="/penalty-management/issuance/" class="add-penalty-button">
+          <ion-icon name="add-circle" style="color: #e4751c; font-size: 5em;"></ion-icon>
+        </router-link>
 
 
     </div>
@@ -215,19 +216,20 @@ export default {
 }
 
 .penalty-details {
-    /* display: flex;
-    flex-direction: column;
-    width: 80%; Adjust as needed */
-    color: white; 
-    line-height: 200%;
-    display:grid;
-    grid-template-columns:0.5fr 1.5fr;
-    color: #FFF;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 240%; 
+  display: flex;
+  align-items: center;
+  width: 140%; 
+  color: white;
+  line-height: 200%;
 }
+
+.penalty-details img {
+  margin-right: 16px; 
+  width: 50px; 
+  height: 50px;
+}
+
+
 
 .penalty-name {
     font-weight: bold;
@@ -242,13 +244,20 @@ export default {
 
 
 .add-penalty-button {
-  width: 48px;
-  height: 48px;
-  top: 795px;
-  left: 362px;
-  border-radius: 48px;
-  gap: 8px;
-}
+    position: fixed;
+    bottom: 80px; 
+    right: 50px; 
+    z-index: 1000; 
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+  
+    .add-penalty-button {
+      bottom: 70px;
+      right: 30px;
+    }
+  }
 
 </style>
 
