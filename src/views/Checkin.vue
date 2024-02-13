@@ -157,7 +157,7 @@ export default {
                                         // add shift assignment to screen
                                         document.querySelector('#__site_name__').innerHTML = `
                                             <h5><b>Site: </b> ${me.shift.site}</h5>
-                                            <h6><b>Site: </b> ${me.shift.shift}</h6>
+                                            <h6><b>Shift: </b> ${me.shift.shift}</h6>
                                             <h5><b>Start: </b> <i class="text-success">${me.shift.start_datetime}</i></h5>
                                             <h5><b>End: </b> <i class="text-danger">${me.shift.end_datetime}</i></h5>
                                         `
@@ -383,6 +383,7 @@ export default {
                 form_data.append("employee_id", me.employee_data.employee_id);
                 if(method == 'verify'){
                     // let {timestamp} = cur_page.page.page.position;
+                    me.get_location(me.page);
                     let {latitude, longitude} = me.page.position.coords;
                     form_data.append("latitude", latitude);
                     form_data.append("longitude", longitude);
