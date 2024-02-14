@@ -67,9 +67,9 @@ export default {
                     $('#profile-card').prepend(card);
                     document.enrolled = enrolled;
                     // start verification/enrollment
-                    me.get_location(me.page);
+                    me.get_location(me.page, this.prepare);
                     locationButton.addEventListener("click", function() {
-                        me.get_location(me.page);
+                        me.get_location(me.page, this.prepare);
                     }, false);
                     
                 }
@@ -129,12 +129,27 @@ export default {
                     $('.vjs-record.vjs-device-button.vjs-control.vjs-icon-video-perm').click();
                     me.show_cues();
                 }, false);
-                
             }
-            
-                
         },
-        get_location(page){
+        prepare(res){
+            let me = this;
+            // show buttons
+            $('#button-controls').show();
+            // add shift assignment to screen
+            document.querySelector('#__site_name__').innerHTML = `
+                <h5><b>Site: </b> ${me.shift.site}</h5>
+                <h6><b>Shift: </b> ${me.shift.shift}</h6>
+                <h5><b>Start: </b> <i class="text-success">${me.shift.start_datetime}</i></h5>
+                <h5><b>End: </b> <i class="text-danger">${me.shift.end_datetime}</i></h5>
+            `
+            // show map
+            me.load_gmap(me.res.data);
+            $('#sync-location').hide();
+            me.ready_checkin(me.res);
+
+        },
+
+        get_location(page, execute_func){
             let me = this;
             if (navigator.geolocation) {
                 window.markers = [];
@@ -147,24 +162,12 @@ export default {
                         me.frappe.customApiCall(`api/method/one_fm.api.v1.face_recognition.get_site_location`,
                             {employee_id:me.employee_data.employee_id, latitude:position.coords.latitude,
                             longitude:position.coords.longitude}, 'POST').then(res=>{
-                                console.log(res)
                                 if(res.status_code==200){
                                     if (res.data.user_within_geofence_radius){
                                         me.res = res;
                                         me.shift = res.data.shift;
-                                        // show buttons
-                                        $('#button-controls').show();
-                                        // add shift assignment to screen
-                                        document.querySelector('#__site_name__').innerHTML = `
-                                            <h5><b>Site: </b> ${me.shift.site}</h5>
-                                            <h6><b>Shift: </b> ${me.shift.shift}</h6>
-                                            <h5><b>Start: </b> <i class="text-success">${me.shift.start_datetime}</i></h5>
-                                            <h5><b>End: </b> <i class="text-danger">${me.shift.end_datetime}</i></h5>
-                                        `
-                                        // show map
-                                        me.load_gmap(res.data);
-                                        $('#sync-location').hide();
-                                        me.ready_checkin(res);
+                                        
+                                        execute_func();
                                     } else {
                                         me.notify.error('Oops', 'You are outside the site location. Please try again')
                                     }
@@ -207,7 +210,8 @@ export default {
         process_video(videoBlob){
             let me = this;
             if (me.page.enrolled){
-                me.upload_file(videoBlob, "verify", me.res.data.log_type, 0)
+                // Get current location again and then resume the checkin/out process
+                me.get_location(me.page, () => me.upload_file(videoBlob, "verify", me.res.data.log_type, 0))
             } else {
                 me.upload_file(videoBlob, "enroll", me.res.data.log_type, 0)
             }
@@ -383,16 +387,14 @@ export default {
                 form_data.append("employee_id", me.employee_data.employee_id);
                 if(method == 'verify'){
                     // let {timestamp} = cur_page.page.page.position;
-                    me.get_location(me.page);
                     let {latitude, longitude} = me.page.position.coords;
                     form_data.append("latitude", latitude);
                     form_data.append("longitude", longitude);
                     // form_data.append("timestamp", timestamp);
                     form_data.append("log_type", log_type);
                     form_data.append("skip_attendance", skip_attendance);
-                } else {
-                    
-                }
+                } 
+
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState == XMLHttpRequest.DONE) {
                         $('#cover-spin').hide();
