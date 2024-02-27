@@ -59,11 +59,12 @@ export default {
                     }
                     
                     let card = `
-                    <div class="col-md-12 col-xs-12" style="text-align:center">
+                    <div class="col-md-12 col-xs-12 employee-details" style="text-align:center">
                         <img src="${image}" alt="Profile" style="width:150px" height="150px">
                         <div class="title">${employee_name}</div>
                         <span id="__site_name__"></span>
                     </div>`;
+                    $('#profile-card .employee-details').remove();
                     $('#profile-card').prepend(card);
                     document.enrolled = enrolled;
                     // start verification/enrollment
@@ -136,12 +137,15 @@ export default {
             // show buttons
             $('#button-controls').show();
             // add shift assignment to screen
+            let start_time = new Date(me.shift.start_datetime).toLocaleString('en-in');
+            let end_time = new Date(me.shift.end_datetime).toLocaleString('en-in');
+
             document.querySelector('#__site_name__').innerHTML = `
                 <h5><b>Site: </b> ${me.shift.site}</h5>
-                <h6><b>Shift: </b> ${me.shift.shift}</h6>
-                <h5><b>Start: </b> <i class="text-success">${me.shift.start_datetime}</i></h5>
-                <h5><b>End: </b> <i class="text-danger">${me.shift.end_datetime}</i></h5>
-            `
+                <h6><b>Site: </b> ${me.shift.shift}</h6>
+                <h5><b>Start: </b> <i class="text-success">${start_time}</i></h5>
+                <h5><b>End: </b> <i class="text-danger">${end_time}</i></h5>
+                `;
             // show map
             me.load_gmap(me.res.data);
             $('#sync-location').hide();
@@ -158,6 +162,7 @@ export default {
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         page.position = position;
+
                         // check for get_site_lication before checkin
                         me.frappe.customApiCall(`api/method/one_fm.api.v1.face_recognition.get_site_location`,
                             {employee_id:me.employee_data.employee_id, latitude:position.coords.latitude,
@@ -218,13 +223,37 @@ export default {
             
         },
         load_gmap(position){
-            
             let me = this;
             let {latitude, longitude, geofence_radius} = position;
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 15,
-                center: {lat: latitude, lng: longitude}
+                center: {lat: latitude, lng: longitude},
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: true
             });
+
+            // Set user's current location on the map
+            let userLat = me.page.position.coords.latitude;
+            let userLng = me.page.position.coords.longitude;
+            const svgMarker = {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                fillColor: "blue",
+                fillOpacity: 0.6,
+                strokeWeight: 0,
+                rotation: 0,
+                scale: 5,
+            };
+            let marker = new google.maps.Marker({
+                map: map,
+                title: "Your location",
+                icon: svgMarker,
+                position: new google.maps.LatLng(userLat, userLng)
+            });
+
             let locationMarker = new google.maps.Circle({
                 map: map,
                 animation: google.maps.Animation.DROP,
@@ -233,11 +262,11 @@ export default {
                 radius: geofence_radius
             });
             markers.push(locationMarker);
+
             me.addYourLocationButton(map, locationMarker);
         },
         addYourLocationButton(map, marker){
             let me = this;
-            
             var controlDiv = document.createElement('div');
 
             var firstChild = document.createElement('button');
@@ -523,7 +552,7 @@ export default {
 
         <div class="section mt-2">
             <div class="card">
-                <div class="card-body" id="page-wrap-content">
+                <div id="page-wrap-content">
                     <div class="page-wrap">
                         <div id="cover-spin"></div>
 
@@ -681,8 +710,8 @@ export default {
 } */
 
 .title {
-  color: grey;
-  /* font-size: 18px; */
+    color: grey;
+    /* font-size: 18px; */
 }
 
 .btn-start {
@@ -752,5 +781,6 @@ video {
 #hourlyButton {
   display: none;
 }
+
 
 </style>
