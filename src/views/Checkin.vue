@@ -59,9 +59,11 @@ export default {
                     }
                     
                     let card = `
-                    <div class="col-md-12 col-xs-12 employee-details" style="text-align:center">
-                        <img src="${image}" alt="Profile" style="width:150px" height="150px">
-                        <div class="title">${employee_name}</div>
+                    <div class="col-md-12 col-xs-12 px-2 py-2 employee-card employee-details" style="text-align:center">
+                        <div class="d-flex flex-row justify-content-around align-items-center">
+                            <img src="${image}" alt="Profile" style="width:125px" height="125px">
+                            <div class="title text-dark">${employee_name}</div>
+                        </div>
                         <span id="__site_name__"></span>
                     </div>`;
                     $('#profile-card .employee-details').remove();
@@ -141,10 +143,26 @@ export default {
             let end_time = new Date(me.shift.end_datetime).toLocaleString('en-in');
 
             document.querySelector('#__site_name__').innerHTML = `
-                <h5><b>Site: </b> ${me.shift.site}</h5>
-                <h6><b>Site: </b> ${me.shift.shift}</h6>
-                <h5><b>Start: </b> <i class="text-success">${start_time}</i></h5>
-                <h5><b>End: </b> <i class="text-danger">${end_time}</i></h5>
+                <table class="table table-sm table-striped">
+                        <tbody>
+                        <tr>
+                            <td class="text-dark bg-white">Site:</td>
+                            <td class="px-0 text-dark bg-white text-center">${me.shift.site}</td>
+                        </tr>    
+                        <tr>
+                            <td class="text-dark bg-white">Shift: </td>
+                            <td class="px-0 text-dark bg-white text-center"> ${me.shift.shift}</td>
+                        </tr>    
+                        <tr>
+                            <td class="text-dark bg-white">Start: </td>
+                            <td class="px-0 text-dark bg-white text-center"><i class="text-success">${start_time}</i></td>
+                        </tr>    
+                        <tr>
+                            <td class="text-dark bg-white">End: </td>
+                            <td class="px-0 text-dark bg-white text-center"><i class="text-danger">${end_time}</i></td>
+                        </tr>    
+                        </tbody>
+                    </table>    
                 `;
             // show map
             me.load_gmap(me.res.data);
@@ -709,9 +727,9 @@ export default {
   text-align: center;
 } */
 
-.title {
+.employee-details .title {
     color: grey;
-    /* font-size: 18px; */
+    font-size: 18px;
 }
 
 .btn-start {
@@ -782,5 +800,8 @@ video {
   display: none;
 }
 
-
+#__site_name__ .table {
+    line-height: 1em;
+    margin-top: 8px;
+}
 </style>
