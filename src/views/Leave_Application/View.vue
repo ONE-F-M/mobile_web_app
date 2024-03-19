@@ -70,7 +70,7 @@ export default {
     <!-- App Capsule -->
     <div id="appCapsule">
 
-      <ul class="nav nav-pills justify-content-center Danger" id="myTab" role="tablist" >
+      <ul class="nav nav-pills justify-content-center Danger" id="myTab" role="tablist" style="color:white;">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="self-tab"  data-bs-toggle="pill" data-bs-target="#employee_leave" type="button" role="tab" aria-controls="employee_leave" aria-selected="true">My Leave</button>
         </li>

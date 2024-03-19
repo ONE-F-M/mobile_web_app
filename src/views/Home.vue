@@ -61,7 +61,7 @@ export default {
             this.frappe.customApiCall(`api/method/one_fm.api.v2.attendance.get_attendance_list`, {
             employee:this.employee_data.name
             }, 'POST').then(res=>{
-                console.log(res)
+               
             if (res.status_code==200){
                 this.attendance_list = res.data;
                 // this.dataBank.attendance_list = res.data;
@@ -74,10 +74,10 @@ export default {
                 employee_id:this.employee_data.name,
                 date_type: "month"
             }, 'POST').then(res=>{
-                console.log(res)
+                
             if (res.status_code==201){
                 var e_detail = res.data;
-                console.log(e_detail)
+               
                 this.dashboard_details.leave = e_detail.leave_balance
                 this.dashboard_details.present = e_detail.days_worked
                 this.dashboard_details.penalties = e_detail.penalties
@@ -98,10 +98,11 @@ export default {
                 window.markers = [];
                 window.circles = [];
                 // JS API is loaded and available
-                console.log("Called")
+               
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         page.position = position;
+
                         // check for get_site_lication before checkin
                         this.frappe.customApiCall(`api/method/one_fm.api.v1.face_recognition.get_site_location`,
                             {employee_id:this.employee_data.employee_id, latitude:position.coords.latitude,
@@ -155,13 +156,38 @@ export default {
             
         },
         load_gmap(position){
-            console.log(position);
+            
             let me = this;
             let {latitude, longitude, geofence_radius} = position;
             var map = new google.maps.Map(document.getElementById('map_home'), {
                 zoom: 15,
-                center: {lat: latitude, lng: longitude}
+                center: {lat: latitude, lng: longitude},
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: true
             });
+
+            // Set user's current location on the map
+            let userLat = me.page.position.coords.latitude;
+            let userLng = me.page.position.coords.longitude;
+            const svgMarker = {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                fillColor: "blue",
+                fillOpacity: 0.6,
+                strokeWeight: 0,
+                rotation: 0,
+                scale: 5,
+            };
+            let marker = new google.maps.Marker({
+                map: map,
+                title: "Your location",
+                icon: svgMarker,
+                position: new google.maps.LatLng(userLat, userLng)
+            });
+
             let locationMarker = new google.maps.Circle({
                 map: map,
                 animation: google.maps.Animation.DROP,

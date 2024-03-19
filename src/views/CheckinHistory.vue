@@ -25,11 +25,11 @@ export default {
     },
     methods:{
       async getData(){
-        
         // Get leave data
         this.frappe.customApiCall("api/method/one_fm.api.v2.web.get_checkin_history", {
           employee: this.employee_data.name}, 'POST').then(res=>{
-            console.log(this.employee_data.employee_id)
+
+            
           if (res.status_code==200){
             this.checkin_history = res.data.logs;
             this.start = res.data.start;
@@ -45,9 +45,9 @@ export default {
 </script>
 
 <template>
-  <!-- Header Start -->
+  
   <Header />
-  <!-- Header End -->
+ 
 
   <!-- Body Start -->
     <!-- App Capsule -->
@@ -91,8 +91,8 @@ export default {
       <!-- * App Capsule -->
   <!-- Body End -->
 
-  <!-- Footer Start -->
+  
   <Footer />
-  <!-- Footer End -->
+
 
 </template>

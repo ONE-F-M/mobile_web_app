@@ -59,17 +59,20 @@ export default {
                     }
                     
                     let card = `
-                    <div class="col-md-12 col-xs-12" style="text-align:center">
-                        <img src="${image}" alt="Profile" style="width:150px" height="150px">
-                        <div class="title">${employee_name}</div>
+                    <div class="col-md-12 col-xs-12 px-2 py-2 employee-card employee-details" style="text-align:center">
+                        <div class="d-flex flex-row justify-content-around align-items-center">
+                            <img src="${image}" alt="Profile" style="width:125px" height="125px">
+                            <div class="title text-dark">${employee_name}</div>
+                        </div>
                         <span id="__site_name__"></span>
                     </div>`;
+                    $('#profile-card .employee-details').remove();
                     $('#profile-card').prepend(card);
                     document.enrolled = enrolled;
                     // start verification/enrollment
-                    me.get_location(me.page);
+                    me.get_location(me.page, this.prepare);
                     locationButton.addEventListener("click", function() {
-                        me.get_location(me.page);
+                        me.get_location(me.page, this.prepare);
                     }, false);
                     
                 }
@@ -129,12 +132,46 @@ export default {
                     $('.vjs-record.vjs-device-button.vjs-control.vjs-icon-video-perm').click();
                     me.show_cues();
                 }, false);
-                
             }
-            
-                
         },
-        get_location(page){
+        prepare(res){
+            let me = this;
+            // show buttons
+            $('#button-controls').show();
+            // add shift assignment to screen
+            let start_time = new Date(me.shift.start_datetime).toLocaleString('en-in');
+            let end_time = new Date(me.shift.end_datetime).toLocaleString('en-in');
+
+            document.querySelector('#__site_name__').innerHTML = `
+                <table class="table table-sm table-striped">
+                        <tbody>
+                        <tr>
+                            <td class="text-dark bg-white">Site:</td>
+                            <td class="px-0 text-dark bg-white text-center">${me.shift.site}</td>
+                        </tr>    
+                        <tr>
+                            <td class="text-dark bg-white">Shift: </td>
+                            <td class="px-0 text-dark bg-white text-center"> ${me.shift.shift}</td>
+                        </tr>    
+                        <tr>
+                            <td class="text-dark bg-white">Start: </td>
+                            <td class="px-0 text-dark bg-white text-center"><i class="text-success">${start_time}</i></td>
+                        </tr>    
+                        <tr>
+                            <td class="text-dark bg-white">End: </td>
+                            <td class="px-0 text-dark bg-white text-center"><i class="text-danger">${end_time}</i></td>
+                        </tr>    
+                        </tbody>
+                    </table>    
+                `;
+            // show map
+            me.load_gmap(me.res.data);
+            $('#sync-location').hide();
+            me.ready_checkin(me.res);
+
+        },
+
+        get_location(page, execute_func){
             let me = this;
             if (navigator.geolocation) {
                 window.markers = [];
@@ -143,28 +180,17 @@ export default {
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         page.position = position;
+
                         // check for get_site_lication before checkin
                         me.frappe.customApiCall(`api/method/one_fm.api.v1.face_recognition.get_site_location`,
                             {employee_id:me.employee_data.employee_id, latitude:position.coords.latitude,
                             longitude:position.coords.longitude}, 'POST').then(res=>{
-                                console.log(res)
                                 if(res.status_code==200){
                                     if (res.data.user_within_geofence_radius){
                                         me.res = res;
                                         me.shift = res.data.shift;
-                                        // show buttons
-                                        $('#button-controls').show();
-                                        // add shift assignment to screen
-                                        document.querySelector('#__site_name__').innerHTML = `
-                                            <h5><b>Site: </b> ${me.shift.site}</h5>
-                                            <h6><b>Site: </b> ${me.shift.shift}</h6>
-                                            <h5><b>Start: </b> <i class="text-success">${me.shift.start_datetime}</i></h5>
-                                            <h5><b>End: </b> <i class="text-danger">${me.shift.end_datetime}</i></h5>
-                                        `
-                                        // show map
-                                        me.load_gmap(res.data);
-                                        $('#sync-location').hide();
-                                        me.ready_checkin(res);
+                                        
+                                        execute_func();
                                     } else {
                                         me.notify.error('Oops', 'You are outside the site location. Please try again')
                                     }
@@ -207,20 +233,45 @@ export default {
         process_video(videoBlob){
             let me = this;
             if (me.page.enrolled){
-                me.upload_file(videoBlob, "verify", me.res.data.log_type, 0)
+                // Get current location again and then resume the checkin/out process
+                me.get_location(me.page, () => me.upload_file(videoBlob, "verify", me.res.data.log_type, 0))
             } else {
                 me.upload_file(videoBlob, "enroll", me.res.data.log_type, 0)
             }
             
         },
         load_gmap(position){
-            console.log(position);
             let me = this;
             let {latitude, longitude, geofence_radius} = position;
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 15,
-                center: {lat: latitude, lng: longitude}
+                center: {lat: latitude, lng: longitude},
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: true
             });
+
+            // Set user's current location on the map
+            let userLat = me.page.position.coords.latitude;
+            let userLng = me.page.position.coords.longitude;
+            const svgMarker = {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                fillColor: "blue",
+                fillOpacity: 0.6,
+                strokeWeight: 0,
+                rotation: 0,
+                scale: 5,
+            };
+            let marker = new google.maps.Marker({
+                map: map,
+                title: "Your location",
+                icon: svgMarker,
+                position: new google.maps.LatLng(userLat, userLng)
+            });
+
             let locationMarker = new google.maps.Circle({
                 map: map,
                 animation: google.maps.Animation.DROP,
@@ -229,11 +280,11 @@ export default {
                 radius: geofence_radius
             });
             markers.push(locationMarker);
+
             me.addYourLocationButton(map, locationMarker);
         },
         addYourLocationButton(map, marker){
             let me = this;
-            console.log(map, marker);
             var controlDiv = document.createElement('div');
 
             var firstChild = document.createElement('button');
@@ -360,7 +411,7 @@ export default {
                 let recordedBlob = new Blob(recordedChunks, {
                     type: "video/mp4",
                 });
-                console.log(recordedBlob, skip_attendance);
+                
                 me.upload_file(recordedBlob, 'verify', log_type, skip_attendance);
             })
         },
@@ -389,9 +440,8 @@ export default {
                     // form_data.append("timestamp", timestamp);
                     form_data.append("log_type", log_type);
                     form_data.append("skip_attendance", skip_attendance);
-                } else {
-                    
-                }
+                } 
+
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState == XMLHttpRequest.DONE) {
                         $('#cover-spin').hide();
@@ -520,7 +570,7 @@ export default {
 
         <div class="section mt-2">
             <div class="card">
-                <div class="card-body" id="page-wrap-content">
+                <div id="page-wrap-content">
                     <div class="page-wrap">
                         <div id="cover-spin"></div>
 
@@ -677,9 +727,9 @@ export default {
   text-align: center;
 } */
 
-.title {
-  color: grey;
-  /* font-size: 18px; */
+.employee-details .title {
+    color: grey;
+    font-size: 18px;
 }
 
 .btn-start {
@@ -750,4 +800,8 @@ video {
   display: none;
 }
 
+#__site_name__ .table {
+    line-height: 1em;
+    margin-top: 8px;
+}
 </style>
